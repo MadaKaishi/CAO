@@ -64,11 +64,15 @@ class Board:
 bo = Board()
 bo.write_tile("a6", "X")
 bo.write_tile("a3", "O")
+<<<<<<< HEAD
 bo.write_tile("a2", "O")
 bo.write_tile("a1", "O")
 bo.write_tile("a4", "O")
 bo.write_tile("a5", "O")
 bo.write_tile("f1", "O")
 bo.write_tile("d5", "X")
+=======
+bo.write_tile("a1", "X")
+>>>>>>> 46e576c1a0a513fff75fa8d45d21fbc4545f649b
 bo.generate_board()
 print(bo.get_board())
