@@ -60,15 +60,15 @@ class Board:
         else:
             self._board_values[tile_index] = str(txt)
 
-
-bo = Board()
-bo.write_tile("a6", "X")
-bo.write_tile("a3", "O")
-bo.write_tile("a2", "O")
-bo.write_tile("a1", "O")
-bo.write_tile("a4", "O")
-bo.write_tile("a5", "O")
-bo.write_tile("f1", "O")
-bo.write_tile("d5", "X")
-bo.generate_board()
-print(bo.get_board())
+if __name__ == "__main__":
+    bo = Board()
+    bo.write_tile("a6", "X")
+    bo.write_tile("a3", "O")
+    bo.write_tile("a2", "O")
+    bo.write_tile("a1", "O")
+    bo.write_tile("a4", "O")
+    bo.write_tile("a5", "O")
+    bo.write_tile("f1", "O")
+    bo.write_tile("d5", "X")
+    bo.generate_board()
+    print(bo.get_board())
