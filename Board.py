@@ -50,5 +50,6 @@ class Board:
 bo = Board()
 bo.write_tile("a6", "X")
 bo.write_tile("a3", "O")
+bo.write_tile("a1", "X")
 bo.generate_board()
 print(bo.get_board())
