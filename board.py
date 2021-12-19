@@ -23,6 +23,47 @@ class Board:
         if tile_index not in possible_values:
             raise OutOfRangeError("Tile is out of range")
 
+    def check_order_win(self, symbol):
+        searched = [symbol, symbol, symbol, symbol, symbol]
+        board = self._create_board_in_list_form()
+        if self._check_horizontal(board, searched):
+            return True
+        if self._check_vertical(board, searched):
+            return True
+
+    def _check_horizontal(self, board, searched):
+        for row in board:
+            if row[:size-1] == searched:
+                return True
+            if row[1:size] == searched:
+                return True
+        return False
+
+    def _check_vertical(self, board, searched):
+        for i in range(size):
+            tem_list = []
+            for row in board:
+                tem_list.append(row[i])
+            if tem_list[:size-1] == searched:
+                return True
+            if tem_list[1:size] == searched:
+                return True
+        return False
+
+    def _check_diagonal(self, board, searched):
+        pass
+
+    def _create_board_in_list_form(self):
+        final_list = []
+        horizontal_values = "abcdef"
+        for number in range(1, size+1).__reversed__():
+            temporary_list = []
+            for letter in horizontal_values:
+                dict_value = f"{letter}{number}"
+                temporary_list.append(f"{self._board_values[dict_value]}")
+            final_list.append(temporary_list)
+        return final_list
+
     def generate_board(self):
         board = ""
         for i in range(size):
@@ -60,6 +101,7 @@ class Board:
         else:
             self._board_values[tile_index] = str(txt)
 
+
 if __name__ == "__main__":
     bo = Board()
     bo.write_tile("a6", "X")
@@ -71,4 +113,5 @@ if __name__ == "__main__":
     bo.write_tile("f1", "O")
     bo.write_tile("d5", "X")
     bo.generate_board()
+    print(bo.create_board_in_list_form())
     print(bo.get_board())

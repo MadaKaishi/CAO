@@ -24,3 +24,34 @@ def test_read_out_of_range():
     bo.write_tile("a1", "X")
     with pytest.raises(OutOfRangeError):
         bo.get_parametr_from_tile("a7")
+
+
+def test_win_x():
+    bo = Board()
+    bo.write_tile("a1", "X")
+    bo.write_tile("b1", "X")
+    bo.write_tile("c1", "X")
+    bo.write_tile("d1", "X")
+    bo.write_tile("e1", "X")
+    assert bo.check_order_win("X")
+
+
+def test_win_x_2():
+    bo = Board()
+    bo.write_tile("f1", "X")
+    bo.write_tile("b1", "X")
+    bo.write_tile("c1", "X")
+    bo.write_tile("d1", "X")
+    bo.write_tile("e1", "X")
+    assert bo.check_order_win("X")
+
+
+def test_win_vertical():
+    bo = Board()
+    bo.write_tile("a1", "X")
+    bo.write_tile("a2", "X")
+    bo.write_tile("a3", "X")
+    bo.write_tile("a4", "X")
+    bo.write_tile("a5", "X")
+    bo.write_tile("a6", "O")
+    assert bo.check_order_win("X")
