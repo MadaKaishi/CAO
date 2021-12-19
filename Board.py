@@ -2,6 +2,10 @@ from constants import BOARD_SIZE as size, TABLE_FILLMENT_HORIZONTAL as fill
 from constants import TABLE_FILLMENT_VERTICAL as vert
 
 
+class OutOfRangeError(Exception):
+    pass
+
+
 class Board:
     def __init__(self) -> None:
         self._board = ""
@@ -13,6 +17,11 @@ class Board:
     def generate_tile(self, tile_value):
         base = f"{vert} {tile_value} "
         return base
+
+    def _check_if_in_range(self, tile_index: str):
+        possible_values = self._board_values.keys()
+        if tile_index not in possible_values:
+            raise OutOfRangeError("Tile is out of range")
 
     def generate_board(self):
         board = ""
@@ -38,12 +47,14 @@ class Board:
         return self._board_values
 
     def get_parametr_from_tile(self, tile_index):
+        self._check_if_in_range(tile_index)
         if tile_index not in self._board_values:
             return None
         else:
             return self._board_values[tile_index]
 
     def write_tile(self, tile_index, txt):
+        self._check_if_in_range(tile_index)
         if tile_index not in self._board_values:
             return None
         else:
