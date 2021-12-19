@@ -1,4 +1,5 @@
-from constants import BOARD_SIZE as size, TABLE_FILLMENT_HORIZONTAL as fill,TABLE_FILLMENT_VERTICAL as vert
+from constants import BOARD_SIZE as size, TABLE_FILLMENT_HORIZONTAL as fill
+from constants import TABLE_FILLMENT_VERTICAL as vert
 
 
 class Board:
@@ -16,11 +17,13 @@ class Board:
     def generate_board(self):
         board = ""
         for i in range(size):
-            board += f"{fill}"*6 + "+\n"
+            board += "  " + f"{fill}"*size + "+\n"
+            board += str(size-i) + " "
             for value in list(self._board_values.values())[(i*size):size+i*size]:
                 board += self.generate_tile(value)
             board += f"{vert}\n"
-        board += f"{fill}"*size + "+"
+        board += "  " + f"{fill}"*size + "+\n"
+        board += "    A   B   C   D   E   F"
         self._board = board
 
     def generate_dictionary(self):
@@ -50,5 +53,11 @@ class Board:
 bo = Board()
 bo.write_tile("a6", "X")
 bo.write_tile("a3", "O")
+bo.write_tile("a2", "O")
+bo.write_tile("a1", "O")
+bo.write_tile("a4", "O")
+bo.write_tile("a5", "O")
+bo.write_tile("f1", "O")
+bo.write_tile("d5", "X")
 bo.generate_board()
 print(bo.get_board())
