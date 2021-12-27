@@ -1,6 +1,5 @@
-from Classes.board import Board
-from Classes.constants import path
-from game import Game
+from classes.board import Board
+from classes.game import Game
 
 
 def choose_side():
@@ -45,5 +44,17 @@ if __name__ == "__main__":
         exit()
     board = Board()
     game = Game(side, gamemode, board)
-    game.create_player()
-    game.save_board(path)
+    player = game.create_player()
+    game.create_opponents(player)
+    print(game.board().get_board())
+    game.play()
+    if side == "1":
+        if game.board().chaos_win():
+            print(f"{player.name()} Loose!")
+        else:
+            print(f"{player.name()} Won!")
+    if side == "2":
+        if game.board().order_win():
+            print(f"{player.name()} Loose!")
+        else:
+            print(f"{player.name()} Won!")

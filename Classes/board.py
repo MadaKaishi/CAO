@@ -1,5 +1,5 @@
-from Classes.constants import BOARD_SIZE as size, TABLE_FILLMENT_HORIZONTAL as fill
-from Classes.constants import TABLE_FILLMENT_VERTICAL as vert
+from classes.constants import BOARD_SIZE as size, TABLE_FILLMENT_HORIZONTAL as fill
+from classes.constants import TABLE_FILLMENT_VERTICAL as vert
 
 
 class OutOfRangeError(Exception):
@@ -19,7 +19,62 @@ class Board:
     def get_board(self):
         return self._board
 
-    def generate_tile(self, tile_value):
+    def order_win(self):
+        if self._order_win_one_symbol("X"):
+            return True
+        if self._order_win_one_symbol("O"):
+            return True
+        return False
+
+    def chaos_win(self, board=None):
+        if board is None:
+            board = self._create_board_in_list_form()
+        for row in board:
+            for tile in row:
+                if tile == " ":
+                    return False
+        return True
+
+    def generate_board(self):
+        board = ""
+        for i in range(size):
+            board += "  " + f"{fill}"*size + "+\n"
+            board += str(size-i) + " "
+            for val in list(self._board_values.values())[(i*size):size+i*size]:
+                board += self._generate_tile(val)
+            board += f"{vert}\n"
+        board += "  " + f"{fill}"*size + "+\n"
+        board += "    A   B   C   D   E   F"
+        self._board = board
+
+    def generate_dictionary(self):
+        self._board_values = {}
+        horizontal_values = "abcdef"
+        for number in range(1, size+1).__reversed__():
+            for letter in horizontal_values:
+                self._board_values[f"{letter}{number}"] = " "
+        return self._board_values
+
+    def get_board_values(self):
+        return self._board_values
+
+    def get_parametr_from_tile(self, tile_index):
+        self._check_if_in_range(tile_index)
+        if tile_index not in self._board_values:
+            return None
+        else:
+            return self._board_values[tile_index]
+
+    def write_tile(self, tile_index, txt):
+        self._check_if_in_range(tile_index)
+        if tile_index not in self._board_values:
+            raise OutOfRangeError("Tile index must be in valid range")
+        elif self._board_values[tile_index] != " ":
+            raise OverwriteError("You cant overwrite tile")
+        else:
+            self._board_values[tile_index] = str(txt)
+
+    def _generate_tile(self, tile_value):
         base = f"{vert} {tile_value} "
         return base
 
@@ -28,7 +83,20 @@ class Board:
         if tile_index not in possible_values:
             raise OutOfRangeError("Tile is out of range")
 
-    def order_win(self, symbol):
+    def _check_any_board_that_is_list(self, board, symbol):
+        if self._check_horizontal(board, symbol):
+            return True
+        if self._check_vertical(board, symbol):
+            return True
+        if self._check_diagonal(board, symbol):
+            return True
+        return False
+
+    def _create_dictionary_full_of_symbol(self, symbol):
+        for key in self._board_values:
+            self._board_values[f"{key}"] = f"{symbol}"
+
+    def _order_win_one_symbol(self, symbol):
         board = self._create_board_in_list_form()
         if self._check_horizontal(board, symbol):
             return True
@@ -38,17 +106,20 @@ class Board:
             return True
         return False
 
-    def _check_horizontal(self, board, symbol):
-        searched = [symbol, symbol, symbol, symbol, symbol]
-        avoided = [symbol, symbol, symbol, symbol, symbol, symbol]
+    def _create_fake_map_filled_with_value(self, symbol):
+        board = self._create_board_in_list_form()
+        final_list = []
         for row in board:
-            if row[:size-1] == searched:
-                if row != avoided:
-                    return True
-            if row[1:size] == searched:
-                if row != avoided:
-                    return True
-        return False
+            tem_list = []
+            for value in row:
+                if value == " ":
+                    value = f"{symbol}"
+                tem_list.append(value)
+            final_list.append(tem_list)
+        return final_list
+
+    def load_board_from_dictionary(self, dictionary):
+        self._board_values = dictionary
 
     def _check_vertical(self, board, symbol):
         searched = [symbol, symbol, symbol, symbol, symbol]
@@ -97,89 +168,14 @@ class Board:
             final_list.append(temporary_list)
         return final_list
 
-    def generate_board(self):
-        board = ""
-        for i in range(size):
-            board += "  " + f"{fill}"*size + "+\n"
-            board += str(size-i) + " "
-            for val in list(self._board_values.values())[(i*size):size+i*size]:
-                board += self.generate_tile(val)
-            board += f"{vert}\n"
-        board += "  " + f"{fill}"*size + "+\n"
-        board += "    A   B   C   D   E   F"
-        self._board = board
-
-    def generate_dictionary(self):
-        self._board_values = {}
-        horizontal_values = "abcdef"
-        for number in range(1, size+1).__reversed__():
-            for letter in horizontal_values:
-                self._board_values[f"{letter}{number}"] = " "
-        return self._board_values
-
-    def get_board_values(self):
-        return self._board_values
-
-    def get_parametr_from_tile(self, tile_index):
-        self._check_if_in_range(tile_index)
-        if tile_index not in self._board_values:
-            return None
-        else:
-            return self._board_values[tile_index]
-
-    def write_tile(self, tile_index, txt):
-        self._check_if_in_range(tile_index)
-        if tile_index not in self._board_values:
-            raise OutOfRangeError("Tile index must be in valid range")
-        elif self._board_values[tile_index] != " ":
-            raise OverwriteError("You cant overwrite tile")
-        else:
-            self._board_values[tile_index] = str(txt)
-
-    def _check_any_board_that_is_list(self, board, symbol):
-        if self._check_horizontal(board, symbol):
-            return True
-        if self._check_vertical(board, symbol):
-            return True
-        if self._check_diagonal(board, symbol):
-            return True
-        return False
-
-    def chaos_win(self, board=None):
-        if board is None:
-            board = self._create_board_in_list_form()
-        for row in board:
-            for tile in row:
-                if tile == " ":
-                    return False
-        return True
-
-    def _create_fake_map_filled_with_value(self, symbol):
-        board = self._create_board_in_list_form()
-        final_list = []
-        for row in board:
-            tem_list = []
-            for value in row:
-                if value == " ":
-                    value = f"{symbol}"
-                tem_list.append(value)
-            final_list.append(tem_list)
-        return final_list
-
-    def load_board_from_dictionary(self, dictionary):
-        self._board_values = dictionary
-
-
-if __name__ == "__main__":
-    bo = Board()
-    bo.write_tile("a6", "X")
-    bo.write_tile("a3", "O")
-    bo.write_tile("a2", "O")
-    bo.write_tile("a1", "O")
-    bo.write_tile("a4", "O")
-    bo.write_tile("f4", "O")
-    bo.write_tile("a5", "O")
-    bo.write_tile("f1", "O")
-    bo.write_tile("d5", "X")
-    bo.generate_board()
-    print(bo.get_board())
+    def _check_horizontal(self, board, symbol):
+            searched = [symbol, symbol, symbol, symbol, symbol]
+            avoided = [symbol, symbol, symbol, symbol, symbol, symbol]
+            for row in board:
+                if row[:size-1] == searched:
+                    if row != avoided:
+                        return True
+                if row[1:size] == searched:
+                    if row != avoided:
+                        return True
+            return False

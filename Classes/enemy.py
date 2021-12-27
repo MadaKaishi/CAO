@@ -6,7 +6,7 @@ class GameSupposedToBeFinished(Exception):
 
 
 class Enemy:
-    def __init__(self, name) -> "Enemy":
+    def __init__(self, name="") -> "Enemy":
         self._name = name
 
     def name(self):
@@ -14,7 +14,7 @@ class Enemy:
 
 
 class EnemyRandom(Enemy):
-    def __init__(self, name) -> "Enemy":
+    def __init__(self, name="") -> "Enemy":
         super().__init__(name)
 
     def choose_index(self, board):
@@ -31,9 +31,14 @@ class EnemyRandom(Enemy):
         possible_symbols = ["X", "O"]
         return choice(possible_symbols)
 
+    def move(self, board):
+        index = self.choose_index(board)
+        symbol = self.choose_symbol()
+        return index, symbol
+
 
 class EnemyAI(Enemy):
-    def __init__(self, name) -> "Enemy":
+    def __init__(self, name="") -> "Enemy":
         super().__init__(name)
 
     def move(self):

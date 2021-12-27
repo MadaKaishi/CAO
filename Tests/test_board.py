@@ -1,4 +1,4 @@
-from Classes.board import Board, OutOfRangeError, OverwriteError
+from classes.board import Board, OutOfRangeError, OverwriteError
 import pytest
 
 
@@ -41,7 +41,7 @@ def test_win_x():
     bo.write_tile("d1", "X")
     bo.write_tile("e1", "X")
     bo.write_tile("f1", "O")
-    assert bo.order_win("X")
+    assert bo.order_win()
 
 
 def test_win_x_2():
@@ -51,7 +51,7 @@ def test_win_x_2():
     bo.write_tile("c1", "X")
     bo.write_tile("d1", "X")
     bo.write_tile("e1", "X")
-    assert bo.order_win("X")
+    assert bo.order_win()
 
 
 def test_win_vertical():
@@ -62,7 +62,7 @@ def test_win_vertical():
     bo.write_tile("a4", "X")
     bo.write_tile("a5", "X")
     bo.write_tile("a6", "O")
-    assert bo.order_win("X")
+    assert bo.order_win()
 
 
 def test_not_win_with_6_in_vertical():
@@ -73,7 +73,7 @@ def test_not_win_with_6_in_vertical():
     bo.write_tile("b4", "X")
     bo.write_tile("b5", "X")
     bo.write_tile("b6", "X")
-    assert not bo.order_win("X")
+    assert not bo.order_win()
 
 
 def test_not_win_with_6_in_horizontal():
@@ -84,7 +84,7 @@ def test_not_win_with_6_in_horizontal():
     bo.write_tile("d1", "X")
     bo.write_tile("e1", "X")
     bo.write_tile("f1", "X")
-    assert not bo.order_win("X")
+    assert not bo.order_win()
 
 
 def test_diagonal_long_1_option():
@@ -94,7 +94,7 @@ def test_diagonal_long_1_option():
     bo.write_tile("c3", "X")
     bo.write_tile("d4", "X")
     bo.write_tile("e5", "X")
-    assert bo.order_win("X")
+    assert bo.order_win()
 
 
 def test_diagonal_long_2_option():
@@ -104,7 +104,7 @@ def test_diagonal_long_2_option():
     bo.write_tile("c3", "X")
     bo.write_tile("d4", "X")
     bo.write_tile("e5", "X")
-    assert bo.order_win("X")
+    assert bo.order_win()
 
 
 def test_diagonal_long_3_option():
@@ -114,7 +114,7 @@ def test_diagonal_long_3_option():
     bo.write_tile("c4", "X")
     bo.write_tile("d3", "X")
     bo.write_tile("e2", "X")
-    assert bo.order_win("X")
+    assert bo.order_win()
 
 
 def test_diagonal_long_4_option():
@@ -124,7 +124,7 @@ def test_diagonal_long_4_option():
     bo.write_tile("c4", "X")
     bo.write_tile("d3", "X")
     bo.write_tile("e2", "X")
-    assert bo.order_win("X")
+    assert bo.order_win()
 
 
 def test_diagonal_long_5_option_lose():
@@ -135,7 +135,7 @@ def test_diagonal_long_5_option_lose():
     bo.write_tile("d3", "X")
     bo.write_tile("e2", "X")
     bo.write_tile("a6", "X")
-    assert not bo.order_win("X")
+    assert not bo.order_win()
 
 
 def test_diagonal_long_6_option_lose():
@@ -146,7 +146,7 @@ def test_diagonal_long_6_option_lose():
     bo.write_tile("d4", "X")
     bo.write_tile("e5", "X")
     bo.write_tile("f6", "X")
-    assert not bo.order_win("X")
+    assert not bo.order_win()
 
 
 def test_diagonal_short_1():
@@ -156,7 +156,7 @@ def test_diagonal_short_1():
     bo.write_tile("c3", "X")
     bo.write_tile("d2", "X")
     bo.write_tile("e1", "X")
-    assert bo.order_win("X")
+    assert bo.order_win()
 
 
 def test_diagonal_short_2():
@@ -166,7 +166,7 @@ def test_diagonal_short_2():
     bo.write_tile("d4", "X")
     bo.write_tile("e3", "X")
     bo.write_tile("f2", "X")
-    assert bo.order_win("X")
+    assert bo.order_win()
 
 
 def test_diagonal_short_3():
@@ -176,7 +176,7 @@ def test_diagonal_short_3():
     bo.write_tile("c4", "X")
     bo.write_tile("b3", "X")
     bo.write_tile("a2", "X")
-    assert bo.order_win("X")
+    assert bo.order_win()
 
 
 def test_diagonal_short_4():
@@ -186,7 +186,7 @@ def test_diagonal_short_4():
     bo.write_tile("d3", "X")
     bo.write_tile("e4", "X")
     bo.write_tile("f5", "X")
-    assert bo.order_win("X")
+    assert bo.order_win()
 
 
 def test_chaos_loose():
@@ -201,5 +201,5 @@ def test_chaos_loose():
 
 def test_map_full_chaos_win():
     board = Board()
-    list_board = board._create_fake_map_filled_with_value("X")
-    assert board.chaos_win(list_board)
+    board._create_dictionary_full_of_symbol("X")
+    assert board.chaos_win()
