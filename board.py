@@ -10,6 +10,7 @@ class Board:
     def __init__(self) -> None:
         self._board = ""
         self.generate_dictionary()
+        self.generate_board()
 
     def get_board(self):
         return self._board
@@ -23,7 +24,7 @@ class Board:
         if tile_index not in possible_values:
             raise OutOfRangeError("Tile is out of range")
 
-    def check_order_win(self, symbol):
+    def order_win(self, symbol):
         board = self._create_board_in_list_form()
         if self._check_horizontal(board, symbol):
             return True
@@ -69,18 +70,17 @@ class Board:
         diagonal_s_4 = [b[4][0], b[3][1], b[2][2], b[1][3], b[0][4]]
         diagonal_s_5 = [b[5][1], b[4][2], b[3][3], b[2][4], b[5][1]]
         diagonal_s_6 = [b[0][1], b[1][2], b[2][3], b[3][4], b[4][5]]
-        diagonal_long = [diagonal_l_1, diagonal_l_2]
-        diagonal_short = [diagonal_s_3, diagonal_s_4, diagonal_s_5, diagonal_s_6]
-        if searched in diagonal_short:
+        dia_long = [diagonal_l_1, diagonal_l_2]
+        dia_short = [diagonal_s_3, diagonal_s_4, diagonal_s_5, diagonal_s_6]
+        if searched in dia_short:
             return True
-        for diagonal in diagonal_long:
+        for diagonal in dia_long:
             if diagonal[:size-1] == searched:
                 if diagonal != avoided:
                     return True
             if diagonal[1:size] == searched:
                 if diagonal != avoided:
                     return True
-
 
     def _create_board_in_list_form(self):
         final_list = []
@@ -98,8 +98,8 @@ class Board:
         for i in range(size):
             board += "  " + f"{fill}"*size + "+\n"
             board += str(size-i) + " "
-            for value in list(self._board_values.values())[(i*size):size+i*size]:
-                board += self.generate_tile(value)
+            for val in list(self._board_values.values())[(i*size):size+i*size]:
+                board += self.generate_tile(val)
             board += f"{vert}\n"
         board += "  " + f"{fill}"*size + "+\n"
         board += "    A   B   C   D   E   F"
@@ -130,6 +130,39 @@ class Board:
         else:
             self._board_values[tile_index] = str(txt)
 
+    def _check_any_board_that_is_list(self, board, symbol):
+        if self._check_horizontal(board, symbol):
+            return True
+        if self._check_vertical(board, symbol):
+            return True
+        if self._check_diagonal(board, symbol):
+            return True
+        return False
+
+    def chaos_win(self, board=None):
+        if board is None:
+            board = self._create_board_in_list_form()
+        for row in board:
+            for tile in row:
+                if tile == " ":
+                    return False
+        return True
+
+    def _create_fake_map_filled_with_value(self, symbol):
+        board = self._create_board_in_list_form()
+        final_list = []
+        for row in board:
+            tem_list = []
+            for value in row:
+                if value == " ":
+                    value = f"{symbol}"
+                tem_list.append(value)
+            final_list.append(tem_list)
+        return final_list
+
+    def load_board_from_dictionary(self, dictionary):
+        self._board_values = dictionary
+
 
 if __name__ == "__main__":
     bo = Board()
@@ -142,6 +175,5 @@ if __name__ == "__main__":
     bo.write_tile("a5", "O")
     bo.write_tile("f1", "O")
     bo.write_tile("d5", "X")
-    print(bo._create_board_in_list_form())
     bo.generate_board()
     print(bo.get_board())
