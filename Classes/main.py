@@ -1,6 +1,7 @@
-from board import Board
-from constants import path
+from Classes.board import Board
+from Classes.constants import path
 from game import Game
+
 
 def choose_side():
     while True:

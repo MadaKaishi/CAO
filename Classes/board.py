@@ -1,8 +1,12 @@
-from constants import BOARD_SIZE as size, TABLE_FILLMENT_HORIZONTAL as fill
-from constants import TABLE_FILLMENT_VERTICAL as vert
+from Classes.constants import BOARD_SIZE as size, TABLE_FILLMENT_HORIZONTAL as fill
+from Classes.constants import TABLE_FILLMENT_VERTICAL as vert
 
 
 class OutOfRangeError(Exception):
+    pass
+
+
+class OverwriteError(Exception):
     pass
 
 
@@ -126,7 +130,9 @@ class Board:
     def write_tile(self, tile_index, txt):
         self._check_if_in_range(tile_index)
         if tile_index not in self._board_values:
-            return None
+            raise OutOfRangeError("Tile index must be in valid range")
+        elif self._board_values[tile_index] != " ":
+            raise OverwriteError("You cant overwrite tile")
         else:
             self._board_values[tile_index] = str(txt)
 

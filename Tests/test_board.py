@@ -1,4 +1,4 @@
-from board import Board, OutOfRangeError
+from Classes.board import Board, OutOfRangeError, OverwriteError
 import pytest
 
 
@@ -24,6 +24,13 @@ def test_read_out_of_range():
     bo.write_tile("a1", "X")
     with pytest.raises(OutOfRangeError):
         bo.get_parametr_from_tile("a7")
+
+
+def test_overwrite():
+    bo = Board()
+    bo.write_tile("a1", "X")
+    with pytest.raises(OverwriteError):
+        bo.write_tile("a1", "O")
 
 
 def test_win_x():

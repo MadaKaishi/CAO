@@ -13,7 +13,7 @@ class Player:
             move_str += f"{index+1}. {place} {symbol}"
         return move_str
 
-    def player_make_move(self, board):
+    def player_choose_move_conditions(self, board):
         while True:
             place = input("Choose your next move: ")
             if place in board._board_values.keys():
@@ -24,4 +24,3 @@ class Player:
                 break
         self.add_move(place, symbol)
         return place, symbol
-
