@@ -9,6 +9,9 @@ class Player:
     def name(self):
         return self._name
 
+    def move_list(self):
+        return self._move_list
+
     def read_move_list(self):
         move_str = ""
         for index, move in enumerate(self._move_list):
