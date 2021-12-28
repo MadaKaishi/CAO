@@ -2,4 +2,3 @@ BOARD_SIZE = 6
 TABLE_FILLMENT_HORIZONTAL = "+---"
 TABLE_FILLMENT_VERTICAL = "|"
 path = "save.txt"
-
