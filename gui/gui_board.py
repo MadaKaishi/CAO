@@ -1,10 +1,10 @@
 import pygame
-from gui_constants import BLACK, COLS, GREY, ROWS, SQUARE_SIZE, WHITE
+from gui_constants import BLACK, COLS, ROWS, SQUARE_SIZE, WHITE
 from gui_piece import GuiPiece
 
 class GuiBoard:
     def __init__(self) -> "GuiBoard":
-        self.board = []
+        self._board = []
         self.crate_board()
 
     def draw_squares(self, win):
@@ -15,19 +15,20 @@ class GuiBoard:
 
     def crate_board(self):
         for row in range(ROWS):
-            self.board.append([])
-            for col in range(COLS):
-                if row < 3:
-                    self.board[row].append(GuiPiece(row, col, "O"))
-                else:
-                    self.board[row].append(GuiPiece(row, col, "X"))
+            temp_list = []
+            for column in range(COLS):
+                temp_list.append(GuiPiece(row, column, ""))
+            self._board.append(temp_list)
 
-    def place(self, row, column):
-        pass
+    def place(self, row, column, piece):
+        self._board[row][column] = piece
+
+    def board(self):
+        return self._board
 
     def draw(self, win):
         self.draw_squares(win)
         for row in range(ROWS):
             for col in range(COLS):
-                piece = self.board[row][col]
+                piece = self._board[row][col]
                 piece.draw(win)
