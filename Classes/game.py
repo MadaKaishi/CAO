@@ -1,23 +1,22 @@
-from .constants import BOARD_SIZE as size, SQUARE_SIZE, FPS
+from .constants import BOARD_SIZE as size, COLS, FPS, ROWS, WIDTH, HEIGHT, PATH
 from .board import Board, OverwriteError
 from .piece import Piece
 from .enemy import EnemyRandom, EnemyAI
+from .window import Window
 import pygame
+
 
 class SymbolError(Exception):
     pass
 
 
+class SaveCorruptedError(Exception):
+    pass
+
+
 class Game():
-    def __init__(self, side=None, gamemode=None, win=None) -> "Game":
+    def __init__(self) -> "Game":
         self._board = Board()
-        self._side = side
-        self._gamemode = gamemode
-        self._win = win
-        if self._gamemode == "1":
-            self._enemy = EnemyRandom("Enemy")
-        if self._gamemode == "2":
-            self._enemy = EnemyAI("Enemy")
         self._turn = "Order"
         self._stop = False
         self._winner = None
@@ -39,8 +38,40 @@ class Game():
     def gamemode(self):
         return self._gamemode
 
+    def win(self):
+        return self._win
+
     def load_board(self, board):
         self._board = board
+
+    def save_game(self):
+        with open(f"{PATH}", "w") as f:
+            f.write(f"{self._turn}\n")
+            f.write(f"{self._side}\n")
+            f.write(f"{self._gamemode}\n")
+            for row in range(ROWS):
+                for col in range(COLS):
+                    f.write(f"{self._board.board()[row][col].symbol()}\n")
+
+    def load_game(self):
+        with open(f"{PATH}", "r") as f:
+            turn = f.readline().rstrip()
+            if turn not in ["Chaos", "Order"]:
+                raise SaveCorruptedError()
+            side = f.readline().rstrip()
+            if side not in ["Chaos", "Order"]:
+                raise SaveCorruptedError()
+            gamemode = f.readline().rstrip()
+            if gamemode not in ["Easy", "Hard"]:
+                raise SaveCorruptedError()
+            board = []
+            for row in range(ROWS):
+                temp_list = []
+                for col in range(COLS):
+                    temp_list.append(Piece(row, col, f.readline().rstrip()))
+                board.append(temp_list)
+            return turn, side, gamemode, Board(board)
+
 
     def order_win(self):
         if self._order_win_one_symbol("X"):
@@ -123,12 +154,6 @@ class Game():
         self._winner = "Chaos"
         return True
 
-    def get_row_col_from_mouse(self, pos):
-        x, y = pos
-        row = y//SQUARE_SIZE
-        col = x//SQUARE_SIZE
-        return int(row), int(col)
-
     def place_circle(self, board, row, col):
         if self.position_ocupied(board, row, col):
             raise OverwriteError()
@@ -147,25 +172,21 @@ class Game():
             return False
         return True
 
-    def check_mouse_pos(self):
-        pos = pygame.mouse.get_pos()
-        row, col = self.get_row_col_from_mouse(pos)
-        return row, col
-
     def player_move(self):
         run = True
         while run:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    self.save_game()
                     run = False
                     self._stop = True
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                    row, col = self.check_mouse_pos()
+                    row, col = self.win().check_mouse_pos()
                     if not self.position_ocupied(self._board, row, col):
                         self.place_x(self._board, row, col)
                         run = False
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
-                    row, col = self.check_mouse_pos()
+                    row, col = self.win().check_mouse_pos()
                     if not self.position_ocupied(self._board, row, col):
                         self.place_circle(self._board, row, col)
                         run = False
@@ -181,36 +202,60 @@ class Game():
             raise SymbolError("Symbol error occured")
 
     def order_move(self):
-        if self._side == "1":
+        if self._side == "Order":
             self.player_move()
         else:
             self.enemy_move()
 
     def chaos_move(self):
-        if self._side == "2":
+        if self._side == "Chaos":
             self.player_move()
         else:
             self.enemy_move()
 
     def play(self):
-        self.board().draw(self._win)
-        pygame.display.update()
+        self.board().draw(self._win.win())
+        self._win.update()
         while (not self.order_win() and not self.chaos_win()) and not self._stop:
             pygame.time.Clock().tick(FPS)
             if self._turn == "Order":
                 self.order_move()
-                self.board().draw(self._win)
-                pygame.display.update()
+                self.board().draw(self._win.win())
+                self._win.update()
                 self._turn = "Chaos"
             if self.order_win():
                 break
             if self._turn == "Chaos":
                 self.chaos_move()
-                self.board().draw(self._win)
-                pygame.display.update()
+                self.board().draw(self._win.win())
+                self._win.update()
                 self._turn = "Order"
             if self.chaos_win():
                 break
         if self._winner is not None:
             print(f"{self._winner} won!")
-        print(self.board().board())
+
+    def prepare_game(self):
+        self._win = Window(WIDTH, HEIGHT, "Chaos and Order")
+        self._win.title_screen()
+        if self._win.action() == "New":
+            self._win.side_choose_window()
+            self._win.difficulty_choose_window()
+            self._side = self._win.side()
+            self._gamemode = self._win.gamemode()
+        elif self._win.action() == "Load":
+            try:
+                turn, side, game, board = self.load_game()
+                self._side = side
+                self._gamemode = game
+                self._turn = turn
+                self._board = board
+            except (FileNotFoundError, SaveCorruptedError):
+                self._win.side_choose_window()
+                self._win.difficulty_choose_window()
+                self._side = self._win.side()
+                self._gamemode = self._win.gamemode()
+        if self._gamemode == "Easy":
+            self._enemy = EnemyRandom("Enemy")
+        if self._gamemode == "Hard":
+            self._enemy = EnemyAI("Enemy")

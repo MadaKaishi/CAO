@@ -8,9 +8,11 @@ class OverwriteError(Exception):
 
 
 class Board:
-    def __init__(self) -> "Board":
-        self._board = []
-        self.crate_board()
+    def __init__(self, board=None) -> "Board":
+        self._board = board
+        if self._board is None:
+            self._board = []
+            self.crate_board()
 
     def draw_squares(self, win):
         win.fill(BLACK)
