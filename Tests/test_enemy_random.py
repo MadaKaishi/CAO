@@ -1,5 +1,7 @@
+from classes.constants import COLS, ROWS
 from classes.enemy import Enemy, EnemyRandom, GameSupposedToBeFinished
 from classes.board import Board
+from classes.piece import Piece
 import pytest
 
 
@@ -21,12 +23,17 @@ def test_enemy_random_choose_symbol():
 def test_enemy_random_choose_index():
     enemy = EnemyRandom()
     board = Board()
-    assert enemy.choose_index(board)
+    row, col = enemy.choose_index(board)
+    assert row in range(ROWS)
+    assert col in range(COLS)
 
 
 def test_enemy_choose_idex_full_board():
     enemy = EnemyRandom()
     board = Board()
-    board._create_dictionary_full_of_symbol("X")
+    for row in range(ROWS):
+        for col in range(COLS):
+            piece = Piece(row, col, "X")
+            board.place(piece)
     with pytest.raises(GameSupposedToBeFinished):
-        enemy.choose_index(board) in board.get_board_values().keys()
+        enemy.choose_index(board)
