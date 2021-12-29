@@ -1,11 +1,8 @@
 import pygame
-from gui.game import Game
+from classes.game import Game
 from classes.constants import SQUARE_SIZE, WIDTH, HEIGHT
 
 FPS = 60
-
-WIN = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Chaos and Order")
 
 def choose_side():
     while True:
@@ -38,6 +35,8 @@ def main():
     gamemode = choose_gamemode()
     if gamemode == "q":
         exit()
+    WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+    pygame.display.set_caption("Chaos and Order")
     game = Game(side, gamemode, WIN)
     game.play()
     pygame.quit()

@@ -21,10 +21,11 @@ class EnemyRandom(Enemy):
 
     def choose_index(self, board):
         empty_tiles = []
-        for row in range(ROWS):
-            for col in range(COLS):
-                if board.board()[col][row].symbol() == "":
-                    empty_tiles.append((row, col))
+        iterable_board = board.board()
+        for row in iterable_board:
+            for piece in row:
+                if piece.symbol() == "":
+                    empty_tiles.append((piece.row(), piece.col()))
         if not empty_tiles:
             raise GameSupposedToBeFinished("Game should be over by now")
         return choice(empty_tiles)

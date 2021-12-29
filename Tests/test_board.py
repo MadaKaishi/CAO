@@ -1,36 +1,19 @@
-from classes.board import Board, OutOfRangeError, OverwriteError
+from classes.board import Board, OverwriteError
 import pytest
+
+from classes.piece import Piece
 
 
 def test_init_instance():
     bo = Board()
-    assert bo.get_parametr_from_tile("a1") == " "
+    assert bo.get_symbol_from_tile(0, 0) == ""
 
 
 def test_write_tile():
     bo = Board()
-    bo.write_tile("a1", "X")
-    assert bo.get_parametr_from_tile("a1") == "X"
-
-
-def test_tile_out_of_range():
-    bo = Board()
-    with pytest.raises(OutOfRangeError):
-        bo.write_tile("a7", "X")
-
-
-def test_read_out_of_range():
-    bo = Board()
-    bo.write_tile("a1", "X")
-    with pytest.raises(OutOfRangeError):
-        bo.get_parametr_from_tile("a7")
-
-
-def test_overwrite():
-    bo = Board()
-    bo.write_tile("a1", "X")
-    with pytest.raises(OverwriteError):
-        bo.write_tile("a1", "O")
+    piece = Piece(0, 0, "X")
+    bo.place(piece)
+    assert bo.get_symbol_from_tile(0, 0) == "X"
 
 
 def test_win_x():

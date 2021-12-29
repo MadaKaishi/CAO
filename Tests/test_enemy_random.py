@@ -21,7 +21,7 @@ def test_enemy_random_choose_symbol():
 def test_enemy_random_choose_index():
     enemy = EnemyRandom()
     board = Board()
-    assert enemy.choose_index(board) in board.get_board_values().keys()
+    assert enemy.choose_index(board)
 
 
 def test_enemy_choose_idex_full_board():
