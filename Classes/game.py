@@ -20,6 +20,7 @@ class Game():
             self._enemy = EnemyAI("Enemy")
         self._turn = "Order"
         self._stop = False
+        self._winner = None
 
     def restart(self, side, gamemode):
         self._board = Board()
@@ -27,6 +28,7 @@ class Game():
         self._gamemode = gamemode
         self._stop = False
         self._turn = "Order"
+        self._winner = None
 
     def board(self):
         return self._board
@@ -42,8 +44,10 @@ class Game():
 
     def order_win(self):
         if self._order_win_one_symbol("X"):
+            self._winner = "Order"
             return True
         if self._order_win_one_symbol("O"):
+            self._winner = "Order"
             return True
         return False
 
@@ -116,6 +120,7 @@ class Game():
             for piece in row:
                 if piece.symbol() == "":
                     return False
+        self._winner = "Chaos"
         return True
 
     def get_row_col_from_mouse(self, pos):
@@ -147,7 +152,7 @@ class Game():
         row, col = self.get_row_col_from_mouse(pos)
         return row, col
 
-    def player_turn(self):
+    def player_move(self):
         run = True
         while run:
             for event in pygame.event.get():
@@ -165,7 +170,7 @@ class Game():
                         self.place_circle(self._board, row, col)
                         run = False
 
-    def enemy_turn(self):
+    def enemy_move(self):
         row, col = self._enemy.choose_index(self._board)
         symbol = self._enemy.choose_symbol()
         if symbol == "X":
@@ -177,20 +182,20 @@ class Game():
 
     def order_move(self):
         if self._side == "1":
-            self.player_turn()
+            self.player_move()
         else:
-            self.enemy_turn()
+            self.enemy_move()
 
     def chaos_move(self):
         if self._side == "2":
-            self.player_turn()
+            self.player_move()
         else:
-            self.enemy_turn()
+            self.enemy_move()
 
     def play(self):
         self.board().draw(self._win)
         pygame.display.update()
-        while (not self.order_win() or not self.chaos_win()) and not self._stop:
+        while (not self.order_win() and not self.chaos_win()) and not self._stop:
             pygame.time.Clock().tick(FPS)
             if self._turn == "Order":
                 self.order_move()
@@ -204,4 +209,8 @@ class Game():
                 self.board().draw(self._win)
                 pygame.display.update()
                 self._turn = "Order"
-        pass
+            if self.chaos_win():
+                break
+        if self._winner is not None:
+            print(f"{self._winner} won!")
+        print(self.board().board())

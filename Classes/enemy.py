@@ -1,7 +1,5 @@
 from random import choice
 
-from classes.constants import COLS, ROWS
-
 
 class GameSupposedToBeFinished(Exception):
     pass
