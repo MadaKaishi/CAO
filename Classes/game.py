@@ -11,6 +11,7 @@ class Game:
         if self._gamemode == "2":
             self._enemy = EnemyAI("Enemy")
         self._board = board
+        self._player = Player("player")
         self._sides = {}
 
     def player_side(self):
@@ -26,13 +27,13 @@ class Game:
         name = input("Player name: ")
         return Player(name)
 
-    def create_opponents(self, player):
+    def create_opponents(self):
         if self._player_side == "1":
-            self._sides["Order"] = player
+            self._sides["Order"] = self._player
             self._sides["Chaos"] = self._enemy
         else:
             self._sides["Order"] = self._enemy
-            self._sides["Chaos"] = player
+            self._sides["Chaos"] = self._player
         return self._sides
 
     def save_board(self, path):

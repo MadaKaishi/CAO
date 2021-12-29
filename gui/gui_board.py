@@ -1,9 +1,10 @@
 import pygame
-from gui_constants import BLACK, COLS, ROWS, SQUARE_SIZE, WHITE
-from gui_piece import GuiPiece
+from classes.constants import BLACK, COLS, ROWS, SQUARE_SIZE, WHITE
+from .gui_piece import Piece
 
-class GuiBoard:
-    def __init__(self) -> "GuiBoard":
+
+class Board:
+    def __init__(self) -> "Board":
         self._board = []
         self.crate_board()
 
@@ -17,7 +18,7 @@ class GuiBoard:
         for row in range(ROWS):
             temp_list = []
             for column in range(COLS):
-                temp_list.append(GuiPiece(row, column, ""))
+                temp_list.append(Piece(row, column, ""))
             self._board.append(temp_list)
 
     def place(self, row, column, piece):
@@ -32,3 +33,6 @@ class GuiBoard:
             for col in range(COLS):
                 piece = self._board[row][col]
                 piece.draw(win)
+
+    def get_symbol_from_tile(self, row, col):
+        return self._board[row][col]

@@ -1,6 +1,11 @@
-from classes.board import Board
-from classes.game import Game
+import pygame
+from gui.game import Game
+from classes.constants import SQUARE_SIZE, WIDTH, HEIGHT
 
+FPS = 60
+
+WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Chaos and Order")
 
 def choose_side():
     while True:
@@ -26,35 +31,16 @@ def choose_gamemode():
     return gamemode
 
 
-def create_game():
-    side = choose_side()
-    if None is side:
-        return None
-    gamemode = choose_gamemode()
-    if None is gamemode:
-        return None
-
-
-if __name__ == "__main__":
+def main():
     side = choose_side()
     if side == "q":
         exit()
     gamemode = choose_gamemode()
     if gamemode == "q":
         exit()
-    board = Board()
-    game = Game(side, gamemode, board)
-    player = game.create_player()
-    game.create_opponents(player)
-    print(game.board().get_board())
+    game = Game(side, gamemode, WIN)
     game.play()
-    if side == "1":
-        if game.board().chaos_win():
-            print(f"{player.name()} Loose!")
-        else:
-            print(f"{player.name()} Won!")
-    if side == "2":
-        if game.board().order_win():
-            print(f"{player.name()} Loose!")
-        else:
-            print(f"{player.name()} Won!")
+    pygame.quit()
+
+
+main()

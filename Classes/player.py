@@ -1,5 +1,5 @@
 class Player:
-    def __init__(self, name) -> "Player":
+    def __init__(self, name="Player") -> "Player":
         self._name = name
         self._move_list = []
 
@@ -19,19 +19,3 @@ class Player:
             move_str += f"{index+1}. {place} {symbol}"
         return move_str
 
-    def move(self, board):
-        possible_moves = []
-        for key in board.get_board_values():
-            if board.get_board_values()[key] == " ":
-                possible_moves.append(f"{key}")
-        while True:
-            place = input("Choose your next move: ")
-            if place in board.get_board_values().keys():
-                if place in possible_moves:
-                    break
-        while True:
-            symbol = input("Choose symbol: ")
-            if symbol in ["X", "O"]:
-                break
-        self.add_move(place, symbol)
-        return place, symbol

@@ -1,14 +1,14 @@
 import pygame
 
-from gui_constants import BLACK, SQUARE_SIZE
+from classes.constants import BLACK, SQUARE_SIZE
 
 
-class GuiPiece:
+class Piece:
     PADDING = 10
     X_PADDING = 10
     LINE_THICKNESS = 7
 
-    def __init__(self, row, column, symbol) -> "GuiPiece":
+    def __init__(self, row, column, symbol) -> "Piece":
         self._row = row
         self._column = column
         self._symbol = symbol

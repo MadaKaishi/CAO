@@ -1,5 +1,7 @@
 from random import choice
 
+from classes.constants import COLS, ROWS
+
 
 class GameSupposedToBeFinished(Exception):
     pass
@@ -19,10 +21,10 @@ class EnemyRandom(Enemy):
 
     def choose_index(self, board):
         empty_tiles = []
-        board_values = board.get_board_values()
-        for key in board_values:
-            if board_values[key] == " ":
-                empty_tiles.append(key)
+        for row in range(ROWS):
+            for col in range(COLS):
+                if board.board()[col][row].symbol() == "":
+                    empty_tiles.append((row, col))
         if not empty_tiles:
             raise GameSupposedToBeFinished("Game should be over by now")
         return choice(empty_tiles)
@@ -30,11 +32,6 @@ class EnemyRandom(Enemy):
     def choose_symbol(self):
         possible_symbols = ["X", "O"]
         return choice(possible_symbols)
-
-    def move(self, board):
-        index = self.choose_index(board)
-        symbol = self.choose_symbol()
-        return index, symbol
 
 
 class EnemyAI(Enemy):
