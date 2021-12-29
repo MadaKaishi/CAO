@@ -1,6 +1,6 @@
 import pygame
-from pygame.constants import BUTTON_LEFT, K_ESCAPE, KEYDOWN, MOUSEBUTTONDOWN
-from .constants import BLACK, BLUE, FONT_TITLE_BUTONS, FONT_TITLE_HEADER, GREY, SQUARE_SIZE, WHITE
+from pygame.constants import K_ESCAPE, MOUSEBUTTONDOWN
+from .constants import BLACK, FONT_TITLE_BUTONS, FONT_TITLE_HEADER, GREY, SQUARE_SIZE, WHITE
 
 class Window:
     def __init__(self, width, height, caption) -> "Window":
@@ -79,7 +79,6 @@ class Window:
                 if event.type == MOUSEBUTTONDOWN:
                     if event.button == 1:
                         click = True
-
 
     def side_choose_window(self):
         run = True

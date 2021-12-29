@@ -1,9 +1,5 @@
 import pygame
 from classes.game import Game
-from classes.constants import SQUARE_SIZE, WIDTH, HEIGHT
-from classes.window import Window
-
-FPS = 60
 
 
 def main():
@@ -13,4 +9,5 @@ def main():
     pygame.quit()
 
 
-main()
+if __name__ == "__main__":
+    main()

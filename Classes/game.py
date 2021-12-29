@@ -225,7 +225,7 @@ class Game():
                 self._turn = "Chaos"
             if self.order_win():
                 break
-            if self._turn == "Chaos":
+            if self._turn == "Chaos" and not self._stop:
                 self.chaos_move()
                 self.board().draw(self._win.win())
                 self._win.update()
