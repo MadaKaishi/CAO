@@ -10,6 +10,10 @@ class Window:
         self._side = None
         self._gamemode = None
         self._action = None
+        self._end_action = None
+
+    def end_action(self):
+        return self._end_action
 
     def side(self):
         return self._side
@@ -139,6 +143,81 @@ class Window:
             if button_easy.collidepoint((x, y)):
                 if click:
                     self._gamemode = "Easy"
+                    run = False
+            self.update()
+            click = False
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    run = False
+                    pygame.quit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == K_ESCAPE:
+                        run = False
+                        pygame.quit()
+                if event.type == MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        click = True
+
+    def game_window_loose(self):
+        run = True
+        button_retry = pygame.Rect(150, 275, 300, 100)
+        button_hard = pygame.Rect(150, 400, 300, 100)
+        click = False
+        while run:
+            x, y = pygame.mouse.get_pos()
+            self._win.fill(WHITE)
+            font_title = pygame.font.SysFont(None, FONT_TITLE_HEADER)
+            font_button = pygame.font.SysFont(None, FONT_TITLE_BUTONS)
+            self.draw_text("You Lose", font_title, BLACK, 205, 100)
+            pygame.draw.rect(self._win, GREY, button_retry)
+            pygame.draw.rect(self._win, GREY, button_hard)
+            self.draw_text("Retry", font_button, BLACK, 260, 310)
+            self.draw_text("Exit", font_button, BLACK, 260, 435)
+            if button_hard.collidepoint((x, y)):
+                if click:
+                    self._end_action = "Exit"
+                    run = False
+            if button_retry.collidepoint((x, y)):
+                if click:
+                    self._end_action = "Retry"
+                    run = False
+            self.update()
+            click = False
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    run = False
+                    pygame.quit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == K_ESCAPE:
+                        run = False
+                        pygame.quit()
+                if event.type == MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        click = True
+
+
+    def game_window_win(self):
+        run = True
+        button_retry = pygame.Rect(150, 275, 300, 100)
+        button_hard = pygame.Rect(150, 400, 300, 100)
+        click = False
+        while run:
+            x, y = pygame.mouse.get_pos()
+            self._win.fill(WHITE)
+            font_title = pygame.font.SysFont(None, FONT_TITLE_HEADER)
+            font_button = pygame.font.SysFont(None, FONT_TITLE_BUTONS)
+            self.draw_text("You Won", font_title, BLACK, 205, 100)
+            pygame.draw.rect(self._win, GREY, button_retry)
+            pygame.draw.rect(self._win, GREY, button_hard)
+            self.draw_text("Retry", font_button, BLACK, 260, 310)
+            self.draw_text("Exit", font_button, BLACK, 260, 435)
+            if button_hard.collidepoint((x, y)):
+                if click:
+                    self._end_action = "Exit"
+                    run = False
+            if button_retry.collidepoint((x, y)):
+                if click:
+                    self._end_action = "Retry"
                     run = False
             self.update()
             click = False

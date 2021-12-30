@@ -4,6 +4,7 @@ from .piece import Piece
 from .enemy import EnemyRandom, EnemyAI
 from .window import Window
 import pygame
+import os
 
 
 class SymbolError(Exception):
@@ -20,14 +21,21 @@ class Game():
         self._turn = "Order"
         self._stop = False
         self._winner = None
+        self._after_action = None
 
-    def restart(self, side, gamemode):
+    def restart(self):
         self._board = Board()
-        self._side = side
-        self._gamemode = gamemode
         self._stop = False
         self._turn = "Order"
         self._winner = None
+        self._gamemode = None
+        self._enemy = None
+        self._side = None
+        self._win = None
+
+
+    def end_action(self):
+        return self._after_action
 
     def board(self):
         return self._board
@@ -72,6 +80,8 @@ class Game():
                 board.append(temp_list)
             return turn, side, gamemode, Board(board)
 
+    def delete_save(self):
+        os.remove(f"{PATH}")
 
     def order_win(self):
         if self._order_win_one_symbol("X"):
@@ -180,6 +190,7 @@ class Game():
                     self.save_game()
                     run = False
                     self._stop = True
+                    self._after_action = "Exit"
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     row, col = self.win().check_mouse_pos()
                     if not self.position_ocupied(self._board, row, col):
@@ -216,6 +227,7 @@ class Game():
     def play(self):
         self.board().draw(self._win.win())
         self._win.update()
+        self._after_action = "Exit"
         while (not self.order_win() and not self.chaos_win()) and not self._stop:
             pygame.time.Clock().tick(FPS)
             if self._turn == "Order":
@@ -233,7 +245,16 @@ class Game():
             if self.chaos_win():
                 break
         if self._winner is not None:
-            print(f"{self._winner} won!")
+            if self._winner != self._side:
+                self._win.game_window_loose()
+            else:
+                self._win.game_window_win()
+            self._after_action = self._win.end_action()
+            if self._after_action == "Retry":
+                self.restart()
+            else:
+                pygame.quit()
+
 
     def prepare_game(self):
         self._win = Window(WIDTH, HEIGHT, "Chaos and Order")

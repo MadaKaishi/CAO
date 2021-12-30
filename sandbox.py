@@ -11,7 +11,8 @@ def main():
         window.side_choose_window()
         window.difficulty_choose_window()
     if window.action() == "Load":
-        pass
+        window.game_window_loose()
+        window.game_window_win()
 
 
 if __name__ == "__main__":
