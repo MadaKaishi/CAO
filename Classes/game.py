@@ -31,7 +31,6 @@ class Game():
         self._gamemode = None
         self._enemy = None
         self._side = None
-        self._win = None
 
 
     def end_action(self):
@@ -245,6 +244,8 @@ class Game():
             if self.chaos_win():
                 break
         if self._winner is not None:
+            if os.path.isfile(f"{PATH}"):
+                self.delete_save()
             if self._winner != self._side:
                 self._win.game_window_loose()
             else:
@@ -254,7 +255,6 @@ class Game():
                 self.restart()
             else:
                 pygame.quit()
-
 
     def prepare_game(self):
         self._win = Window(WIDTH, HEIGHT, "Chaos and Order")
@@ -276,6 +276,16 @@ class Game():
                 self._win.difficulty_choose_window()
                 self._side = self._win.side()
                 self._gamemode = self._win.gamemode()
+        if self._gamemode == "Easy":
+            self._enemy = EnemyRandom("Enemy")
+        if self._gamemode == "Hard":
+            self._enemy = EnemyAI("Enemy")
+
+    def prepare_retry(self):
+        self._win.side_choose_window()
+        self._win.difficulty_choose_window()
+        self._side = self._win.side()
+        self._gamemode = self._win.gamemode()
         if self._gamemode == "Easy":
             self._enemy = EnemyRandom("Enemy")
         if self._gamemode == "Hard":

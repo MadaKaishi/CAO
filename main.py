@@ -7,7 +7,7 @@ def main():
     game.prepare_game()
     game.play()
     while game._after_action == "Retry":
-        game.prepare_game()
+        game.prepare_retry()
         game.play()
     pygame.quit()
 

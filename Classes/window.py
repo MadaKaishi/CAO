@@ -1,6 +1,7 @@
 import pygame
 from pygame.constants import K_ESCAPE, MOUSEBUTTONDOWN
-from .constants import BLACK, FONT_TITLE_BUTONS, FONT_TITLE_HEADER, GREY, SQUARE_SIZE, WHITE
+from os.path import exists
+from .constants import BLACK, FONT_TITLE_BUTONS, FONT_TITLE_HEADER, GREEN, GREY, PATH, SQUARE_SIZE, WHITE
 
 class Window:
     def __init__(self, width, height, caption) -> "Window":
@@ -11,6 +12,8 @@ class Window:
         self._gamemode = None
         self._action = None
         self._end_action = None
+        self._is_save = None
+        self.check_save()
 
     def end_action(self):
         return self._end_action
@@ -26,6 +29,12 @@ class Window:
 
     def win(self):
         return self._win
+
+    def check_save(self):
+        if exists(f"{PATH}"):
+            self._is_save = True
+        else:
+            self._is_save = False
 
     def check_mouse_pos(self):
         pos = pygame.mouse.get_pos()
@@ -63,10 +72,15 @@ class Window:
             self.draw_text("New game", font_button, BLACK, 225, 310)
             self.draw_text("Load game", font_button, BLACK, 225, 435)
             if button_load_game.collidepoint((x, y)):
-                if click:
-                    self._action = "Load"
-                    run = False
+                if self._is_save:
+                    pygame.draw.rect(self._win, GREEN, button_load_game)
+                    self.draw_text("Load game", font_button, BLACK, 225, 435)
+                    if click:
+                        self._action = "Load"
+                        run = False
             if button_new_game.collidepoint((x, y)):
+                pygame.draw.rect(self._win, GREEN, button_new_game)
+                self.draw_text("New game", font_button, BLACK, 225, 310)
                 if click:
                     self._action = "New"
                     run = False
@@ -100,10 +114,14 @@ class Window:
             self.draw_text("Order", font_button, BLACK, 250, 310)
             self.draw_text("Chaos", font_button, BLACK, 250, 435)
             if button_chaos.collidepoint((x, y)):
+                pygame.draw.rect(self._win, GREEN, button_chaos)
+                self.draw_text("Chaos", font_button, BLACK, 250, 435)
                 if click:
                     self._side = "Chaos"
                     run = False
             if button_order.collidepoint((x, y)):
+                pygame.draw.rect(self._win, GREEN, button_order)
+                self.draw_text("Order", font_button, BLACK, 250, 310)
                 if click:
                     self._side = "Order"
                     run = False
@@ -137,10 +155,14 @@ class Window:
             self.draw_text("Easy", font_button, BLACK, 260, 310)
             self.draw_text("Hard", font_button, BLACK, 260, 435)
             if button_hard.collidepoint((x, y)):
+                pygame.draw.rect(self._win, GREEN, button_hard)
+                self.draw_text("Hard", font_button, BLACK, 260, 435)
                 if click:
                     self._gamemode = "Hard"
                     run = False
             if button_easy.collidepoint((x, y)):
+                pygame.draw.rect(self._win, GREEN, button_easy)
+                self.draw_text("Easy", font_button, BLACK, 260, 310)
                 if click:
                     self._gamemode = "Easy"
                     run = False
@@ -161,7 +183,7 @@ class Window:
     def game_window_loose(self):
         run = True
         button_retry = pygame.Rect(150, 275, 300, 100)
-        button_hard = pygame.Rect(150, 400, 300, 100)
+        button_exit = pygame.Rect(150, 400, 300, 100)
         click = False
         while run:
             x, y = pygame.mouse.get_pos()
@@ -170,14 +192,18 @@ class Window:
             font_button = pygame.font.SysFont(None, FONT_TITLE_BUTONS)
             self.draw_text("You Lose", font_title, BLACK, 205, 100)
             pygame.draw.rect(self._win, GREY, button_retry)
-            pygame.draw.rect(self._win, GREY, button_hard)
+            pygame.draw.rect(self._win, GREY, button_exit)
             self.draw_text("Retry", font_button, BLACK, 260, 310)
             self.draw_text("Exit", font_button, BLACK, 260, 435)
-            if button_hard.collidepoint((x, y)):
+            if button_exit.collidepoint((x, y)):
+                pygame.draw.rect(self._win, GREEN, button_exit)
+                self.draw_text("Exit", font_button, BLACK, 260, 435)
                 if click:
                     self._end_action = "Exit"
                     run = False
             if button_retry.collidepoint((x, y)):
+                pygame.draw.rect(self._win, GREEN, button_retry)
+                self.draw_text("Retry", font_button, BLACK, 260, 310)
                 if click:
                     self._end_action = "Retry"
                     run = False
@@ -199,7 +225,7 @@ class Window:
     def game_window_win(self):
         run = True
         button_retry = pygame.Rect(150, 275, 300, 100)
-        button_hard = pygame.Rect(150, 400, 300, 100)
+        button_exit = pygame.Rect(150, 400, 300, 100)
         click = False
         while run:
             x, y = pygame.mouse.get_pos()
@@ -208,14 +234,18 @@ class Window:
             font_button = pygame.font.SysFont(None, FONT_TITLE_BUTONS)
             self.draw_text("You Won", font_title, BLACK, 205, 100)
             pygame.draw.rect(self._win, GREY, button_retry)
-            pygame.draw.rect(self._win, GREY, button_hard)
+            pygame.draw.rect(self._win, GREY, button_exit)
             self.draw_text("Retry", font_button, BLACK, 260, 310)
             self.draw_text("Exit", font_button, BLACK, 260, 435)
-            if button_hard.collidepoint((x, y)):
+            if button_exit.collidepoint((x, y)):
+                pygame.draw.rect(self._win, GREEN, button_exit)
+                self.draw_text("Exit", font_button, BLACK, 260, 435)
                 if click:
                     self._end_action = "Exit"
                     run = False
             if button_retry.collidepoint((x, y)):
+                pygame.draw.rect(self._win, GREEN, button_retry)
+                self.draw_text("Retry", font_button, BLACK, 260, 310)
                 if click:
                     self._end_action = "Retry"
                     run = False
