@@ -6,13 +6,7 @@ from classes.window import Window
 
 def main():
     window = Window(WIDTH, HEIGHT, "Sandbox")
-    window.title_screen()
-    if window.action() == "New":
-        window.side_choose_window()
-        window.difficulty_choose_window()
-    if window.action() == "Load":
-        window.game_window_loose()
-        window.game_window_win()
+    window.generate_basic_window("dsa","da","dsa")
 
 
 if __name__ == "__main__":

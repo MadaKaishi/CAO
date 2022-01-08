@@ -1,7 +1,8 @@
+from pygame.constants import K_ESCAPE
 from .constants import BOARD_SIZE as size, COLS, FPS, ROWS, WIDTH, HEIGHT, PATH
 from .board import Board, OverwriteError
 from .piece import Piece
-from .enemy import EnemyRandom, EnemyAI
+from .enemy import EnemyRandom, EnemyAIOrder, EnemyAIChaos
 from .window import Window
 import pygame
 import os
@@ -23,7 +24,7 @@ class Game():
         self._winner = None
         self._after_action = None
 
-    def restart(self):
+    def _restart(self):
         self._board = Board()
         self._stop = False
         self._turn = "Order"
@@ -31,7 +32,6 @@ class Game():
         self._gamemode = None
         self._enemy = None
         self._side = None
-
 
     def end_action(self):
         return self._after_action
@@ -60,7 +60,7 @@ class Game():
                 for col in range(COLS):
                     f.write(f"{self._board.board()[row][col].symbol()}\n")
 
-    def load_game(self):
+    def _load_game(self):
         with open(f"{PATH}", "r") as f:
             turn = f.readline().rstrip()
             if turn not in ["Chaos", "Order"]:
@@ -163,16 +163,27 @@ class Game():
         self._winner = "Chaos"
         return True
 
-    def place_circle(self, board, row, col):
+    def _choose_enemy_based_on_modes(self):
+        if self._gamemode == "Easy":
+            self._enemy = EnemyRandom("EnemyRandom")
+        if self._gamemode == "Hard":
+            if self._side == "Order":
+                self._enemy = EnemyAIChaos("EnemyAIChaos", self._board)
+            if self._side == "Chaos":
+                self._enemy = EnemyAIOrder("EnemyAIOrder", self._board)
+
+    def _place_circle(self, board, row, col):
         if self.position_ocupied(board, row, col):
             raise OverwriteError()
         piece = Piece(row, col, "O")
+        board.set_last_move(piece)
         board.place(piece)
 
-    def place_x(self, board, row, col):
+    def _place_x(self, board, row, col):
         if self.position_ocupied(board, row, col):
             raise OverwriteError()
         piece = Piece(row, col, "X")
+        board.set_last_move(piece)
         board.place(piece)
 
     def position_ocupied(self, board, row, col):
@@ -190,24 +201,31 @@ class Game():
                     run = False
                     self._stop = True
                     self._after_action = "Exit"
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == K_ESCAPE:
+                        self.save_game()
+                        self._stop = True
+                        self._after_action = "Exit"
+                        run = False
+                        pygame.quit()
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     row, col = self.win().check_mouse_pos()
                     if not self.position_ocupied(self._board, row, col):
-                        self.place_x(self._board, row, col)
+                        self._place_x(self._board, row, col)
                         run = False
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
                     row, col = self.win().check_mouse_pos()
                     if not self.position_ocupied(self._board, row, col):
-                        self.place_circle(self._board, row, col)
+                        self._place_circle(self._board, row, col)
                         run = False
 
     def enemy_move(self):
         row, col = self._enemy.choose_index(self._board)
         symbol = self._enemy.choose_symbol()
         if symbol == "X":
-            self.place_x(self._board, row, col)
+            self._place_x(self._board, row, col)
         elif symbol == "O":
-            self.place_circle(self._board, row, col)
+            self._place_circle(self._board, row, col)
         else:
             raise SymbolError("Symbol error occured")
 
@@ -252,7 +270,7 @@ class Game():
                 self._win.game_window_win()
             self._after_action = self._win.end_action()
             if self._after_action == "Retry":
-                self.restart()
+                self._restart()
             else:
                 pygame.quit()
 
@@ -266,7 +284,7 @@ class Game():
             self._gamemode = self._win.gamemode()
         elif self._win.action() == "Load":
             try:
-                turn, side, game, board = self.load_game()
+                turn, side, game, board = self._load_game()
                 self._side = side
                 self._gamemode = game
                 self._turn = turn
@@ -276,10 +294,7 @@ class Game():
                 self._win.difficulty_choose_window()
                 self._side = self._win.side()
                 self._gamemode = self._win.gamemode()
-        if self._gamemode == "Easy":
-            self._enemy = EnemyRandom("Enemy")
-        if self._gamemode == "Hard":
-            self._enemy = EnemyAI("Enemy")
+        self._choose_enemy_based_on_modes()
 
     def prepare_retry(self):
         self._win.side_choose_window()
@@ -289,4 +304,7 @@ class Game():
         if self._gamemode == "Easy":
             self._enemy = EnemyRandom("Enemy")
         if self._gamemode == "Hard":
-            self._enemy = EnemyAI("Enemy")
+            if self._side == "Order":
+                self._enemy = EnemyAIChaos("Enemy", self._board)
+            if self._side == "Chaos":
+                self._enemy = EnemyAIOrder("Enemy", self._board)

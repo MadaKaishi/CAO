@@ -13,6 +13,13 @@ class Board:
         if self._board is None:
             self._board = []
             self.crate_board()
+        self._last_move = None
+
+    def set_last_move(self, piece):
+        self._last_move = piece
+
+    def last_move(self):
+        return self._last_move
 
     def draw_squares(self, win):
         win.fill(BLACK)

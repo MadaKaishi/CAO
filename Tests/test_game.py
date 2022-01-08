@@ -1,26 +1,48 @@
 from classes.constants import COLS, ROWS
+from classes.enemy import EnemyRandom
 from classes.game import Game
 from classes.piece import Piece
 
 
 def test_game_create():
-    game = Game("1", "1")
-    assert game.gamemode() == "1"
-    assert game.side() == "1"
-    assert game._enemy.name() == "Enemy"
+    game = Game()
     assert game._turn == "Order"
     assert not game._stop
     assert game.board().board()[0][0].symbol() == ""
 
 
 def test_restart():
-    game = Game("1", "1")
+    game = Game()
     piece = Piece(0, 0, "X")
     game.board().place(piece)
     assert game.board().board()[0][0].symbol() == "X"
-    game.restart("1", "1")
+    game._restart()
     assert game.board().board()[0][0].symbol() == ""
 
+
+def test_game_opponent_choose_easy():
+    game = Game()
+    game._gamemode = "Easy"
+    game._choose_enemy_based_on_modes()
+    assert game._enemy.name() == "EnemyRandom"
+
+
+def test_game_opponent_choose_AIChaos():
+    game = Game()
+    game._gamemode = "Hard"
+    game._side = "Order"
+    game._choose_enemy_based_on_modes()
+    assert game._enemy.name() == "EnemyAIChaos"
+
+
+def test_game_opponent_choose_AIOrder():
+    game = Game()
+    game._gamemode = "Hard"
+    game._side = "Chaos"
+    game._choose_enemy_based_on_modes()
+    assert game._enemy.name() == "EnemyAIOrder"
+# Testing if game catches win conditions
+# Down are just coded win conditions
 
 def test_win_vert():
     game = Game()
