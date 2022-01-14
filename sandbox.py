@@ -6,7 +6,7 @@ from classes.window import Window
 
 def main():
     window = Window(WIDTH, HEIGHT, "Sandbox")
-    window.generate_basic_window("dsa","da","dsa")
+    window._generate_basic_window_other_than_title("Choose Gamemode","Easy","Hard","easy","hard")
 
 
 if __name__ == "__main__":

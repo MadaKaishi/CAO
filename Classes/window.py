@@ -1,11 +1,12 @@
 import pygame
+from typing import Union
 from pygame.constants import K_ESCAPE, MOUSEBUTTONDOWN
 from os.path import exists
 from .constants import BLACK, BUTTON_1_CORDS, BUTTON_2_CORDS, BUTTON_HEIGHT, BUTTON_WIDTH, FONT_TITLE_BUTONS, FONT_TITLE_HEADER, GREEN, GREY, HEADER_CORDS, PATH, SQUARE_SIZE, WHITE, WIDTH
 
 
 class Window:
-    def __init__(self, width, height, caption) -> "Window":
+    def __init__(self, width: int, height: int, caption: str):
         pygame.init()
         self._win = pygame.display.set_mode((width, height))
         pygame.display.set_caption(f"{caption}")
@@ -16,19 +17,19 @@ class Window:
         self._is_save = None
         self.check_save()
 
-    def end_action(self):
+    def end_action(self) -> Union[str, None]:
         return self._end_action
 
-    def side(self):
+    def side(self) -> Union[str, None]:
         return self._side
 
-    def gamemode(self):
+    def gamemode(self) -> Union[str, None]:
         return self._gamemode
 
-    def action(self):
+    def action(self) -> Union[str, None]:
         return self._action
 
-    def win(self):
+    def win(self) -> "Window":
         return self._win
 
     def check_save(self):
@@ -37,12 +38,12 @@ class Window:
         else:
             self._is_save = False
 
-    def check_mouse_pos(self):
+    def check_mouse_pos(self) -> tuple:
         pos = pygame.mouse.get_pos()
         row, col = self.get_row_col_from_mouse(pos)
         return row, col
 
-    def get_row_col_from_mouse(self, pos):
+    def get_row_col_from_mouse(self, pos: tuple) -> tuple:
         x, y = pos
         row = y//SQUARE_SIZE
         col = x//SQUARE_SIZE
@@ -51,18 +52,18 @@ class Window:
     def update(self):
         pygame.display.update()
 
-    def draw_text(self, text, font, color, x, y):
+    def draw_text(self, text: int, font: int, color: tuple, x: int, y: int):
         textobj = font.render(text, 1, color)
         textrect = textobj.get_rect()
         textrect.topleft = (x, y)
         self._win.blit(textobj, textrect)
 
-    def draw_text_auto_centered(self, text, font, color, y):
+    def draw_text_auto_centered(self, text: str, font: int, color: tuple, y: int):
         textobj = font.render(text, 1, color)
         textrect = textobj.get_rect(center=(WIDTH//2, y + BUTTON_HEIGHT//2))
         self._win.blit(textobj, textrect)
 
-    def _generate_basic_window_other_than_title(self, text_title, text_button_1, text_button_2, action1, action2):
+    def _generate_basic_window_other_than_title(self, text_title: str, text_button_1: str, text_button_2: str, action1: str, action2: str) -> str:
         run = True
         button_new_game = pygame.Rect(BUTTON_1_CORDS[0], BUTTON_1_CORDS[1], BUTTON_WIDTH, BUTTON_HEIGHT)
         button_load_game = pygame.Rect(BUTTON_2_CORDS[0], BUTTON_2_CORDS[1], BUTTON_WIDTH, BUTTON_HEIGHT)
@@ -81,28 +82,30 @@ class Window:
                 pygame.draw.rect(self._win, GREEN, button_load_game)
                 self.draw_text_auto_centered(f"{text_button_2}", font_button, BLACK, BUTTON_2_CORDS[1])
                 if click:
-                    self._action = f"{action2}"
+                    action = f"{action2}"
                     run = False
             if button_new_game.collidepoint((x, y)):
                 pygame.draw.rect(self._win, GREEN, button_new_game)
                 self.draw_text_auto_centered(f"{text_button_1}", font_button, BLACK, BUTTON_1_CORDS[1])
                 if click:
-                    self._action = f"{action1}"
+                    action = f"{action1}"
                     run = False
             self.update()
             click = False
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    action = None
                     run = False
                     pygame.quit()
                 if event.type == pygame.KEYDOWN:
                     if event.key == K_ESCAPE:
+                        action = None
                         run = False
                         pygame.quit()
                 if event.type == MOUSEBUTTONDOWN:
                     if event.button == 1:
                         click = True
-        return self._action
+        return action
 
     def title_screen(self):
         run = True
@@ -157,7 +160,6 @@ class Window:
     def game_window_loose(self):
         action = self._generate_basic_window_other_than_title("You Lose", "Retry", "Exit", "Retry", "Exit")
         self._end_action = action
-
 
     def game_window_win(self):
         action = self._generate_basic_window_other_than_title("You Won", "Retry", "Exit", "Retry", "Exit")

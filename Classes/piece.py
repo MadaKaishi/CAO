@@ -1,5 +1,6 @@
 import pygame
-
+from .window import Window
+from typing import Union
 from classes.constants import BLACK, SQUARE_SIZE
 
 
@@ -8,7 +9,7 @@ class Piece:
     X_PADDING = 10
     LINE_THICKNESS = 7
 
-    def __init__(self, row, column, symbol) -> "Piece":
+    def __init__(self, row: int, column: int, symbol: str):
         self._row = row
         self._column = column
         self._symbol = symbol
@@ -16,13 +17,13 @@ class Piece:
         self._y = 0
         self.calc_position()
 
-    def row(self):
+    def row(self) -> int:
         return self._row
 
-    def col(self):
+    def col(self) -> int:
         return self._column
 
-    def symbol(self):
+    def symbol(self) -> str:
         return self._symbol
 
     def calc_position(self):
@@ -41,7 +42,7 @@ class Piece:
         radius = SQUARE_SIZE//2 - self.PADDING
         pygame.draw.circle(win, BLACK, (self._x, self._y), radius, self.LINE_THICKNESS)
 
-    def draw(self, win):
+    def draw(self, win: "Window") -> Union[str, None]:
         if self._symbol == "X":
             self.draw_x(win)
         if self._symbol == "O":

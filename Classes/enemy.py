@@ -1,4 +1,5 @@
 from random import choice
+from .board import Board
 
 
 class GameSupposedToBeFinished(Exception):
@@ -6,18 +7,18 @@ class GameSupposedToBeFinished(Exception):
 
 
 class Enemy:
-    def __init__(self, name="") -> "Enemy":
+    def __init__(self, name=""):
         self._name = name
 
-    def name(self):
+    def name(self) -> str:
         return self._name
 
 
 class EnemyRandom(Enemy):
-    def __init__(self, name="") -> "Enemy":
+    def __init__(self, name=""):
         super().__init__(name)
 
-    def choose_index(self, board):
+    def choose_index(self, board: "Board") -> tuple:
         empty_tiles = []
         iterable_board = board.board()
         for row in iterable_board:
@@ -28,13 +29,13 @@ class EnemyRandom(Enemy):
             raise GameSupposedToBeFinished("Game should be over by now")
         return choice(empty_tiles)
 
-    def choose_symbol(self, board=None):
+    def choose_symbol(self, board=None) -> str:
         possible_symbols = ["X", "O"]
         return choice(possible_symbols)
 
 
 class EnemyAIOrder(Enemy):
-    def __init__(self, name="", board=None) -> "Enemy":
+    def __init__(self, name="", board=None):
         super().__init__(name)
         self._board = board
 
@@ -43,19 +44,19 @@ class EnemyAIOrder(Enemy):
 
 
 class EnemyAIChaos(Enemy):
-    def __init__(self, name="", board=None) -> "Enemy":
+    def __init__(self, name="", board=None):
         super().__init__(name)
         self._moves_dict = self.par_movement()
         self._board = board
 
-    def get_last_move(self, board):
+    def get_last_move(self, board: "Board") -> tuple:
         last_placed = board.last_move()
         row = last_placed.row()
         col = last_placed.col()
         sym = last_placed.symbol()
         return row, col, sym
 
-    def choose_index(self, board):
+    def choose_index(self, board: "Board") -> tuple:
         row, col, _ = self.get_last_move(board)
         rowcol = str(row)+str(col)
         wanted_rowcol = self._moves_dict[rowcol]
@@ -63,7 +64,7 @@ class EnemyAIChaos(Enemy):
         wanted_col = int(wanted_rowcol[1])
         return(wanted_row, wanted_col)
 
-    def choose_symbol(self):
+    def choose_symbol(self) -> str:
         row, col, sym = self.get_last_move(self._board)
         corner = [(0, 0), (5, 0), (0, 5), (5, 5)]
         if (row, col) not in corner:
@@ -74,7 +75,7 @@ class EnemyAIChaos(Enemy):
         else:
             return sym
 
-    def par_movement(self):
+    def par_movement(self) -> dict:
         moves_dictionary = {
             "00": "55",
             "01": "45",

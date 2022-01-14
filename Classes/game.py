@@ -4,6 +4,7 @@ from .board import Board, OverwriteError
 from .piece import Piece
 from .enemy import EnemyRandom, EnemyAIOrder, EnemyAIChaos
 from .window import Window
+from typing import Union
 import pygame
 import os
 
@@ -17,7 +18,25 @@ class SaveCorruptedError(Exception):
 
 
 class Game():
-    def __init__(self) -> "Game":
+    """
+    Class game represents game of Chaos and Order
+    Its the main calss of this program
+    It is connected to other classes like:
+    -Border
+    -Piece
+    -Enemy
+    -Window
+    Basing of methods used in other classes it hadles the game
+    """
+    def __init__(self):
+        """
+        Initiates the game with:
+        empyt boarder,
+        turn set to be played as order,
+        stop set as false,
+        winner set as none,
+        action after finishing game as none
+        """
         self._board = Board()
         self._turn = "Order"
         self._stop = False
@@ -25,6 +44,10 @@ class Game():
         self._after_action = None
 
     def _restart(self):
+        """
+        Restarts the game, makes an empty board, and
+        set other variables as default
+        """
         self._board = Board()
         self._stop = False
         self._turn = "Order"
@@ -33,25 +56,46 @@ class Game():
         self._enemy = None
         self._side = None
 
-    def end_action(self):
+    def end_action(self) -> Union[str, None]:
+        """
+        Returns value of self._after_action
+        """
         return self._after_action
 
-    def board(self):
+    def board(self) -> "Board":
+        """
+        Returns value of self._board
+        """
         return self._board
 
-    def side(self):
+    def side(self) -> Union[str, None]:
+        """
+        Returns value of self._side
+        """
         return self._side
 
-    def gamemode(self):
+    def gamemode(self) -> Union[str, None]:
+        """
+        Returns value of self._gamemode
+        """
         return self._gamemode
 
-    def win(self):
+    def win(self) -> Union["Window", None]:
+        """
+        Returns value of self._win (window)
+        """
         return self._win
 
-    def load_board(self, board):
+    def load_board(self, board: "Board"):
+        """
+        Sets value of self._board to board
+        """
         self._board = board
 
     def save_game(self):
+        """
+        Saves game file localted in path specified in constants file
+        """
         with open(f"{PATH}", "w") as f:
             f.write(f"{self._turn}\n")
             f.write(f"{self._side}\n")
@@ -60,7 +104,11 @@ class Game():
                 for col in range(COLS):
                     f.write(f"{self._board.board()[row][col].symbol()}\n")
 
-    def _load_game(self):
+    def _load_game(self) -> tuple:
+        """
+        Loads game setups from file that location is described by path
+        in constants
+        """
         with open(f"{PATH}", "r") as f:
             turn = f.readline().rstrip()
             if turn not in ["Chaos", "Order"]:
@@ -80,9 +128,11 @@ class Game():
             return turn, side, gamemode, Board(board)
 
     def delete_save(self):
+        """Deletes save"""
         os.remove(f"{PATH}")
 
-    def order_win(self):
+    def order_win(self) -> bool:
+        """Check if order wins with any symbol"""
         if self._order_win_one_symbol("X"):
             self._winner = "Order"
             return True
@@ -91,7 +141,11 @@ class Game():
             return True
         return False
 
-    def _order_win_one_symbol(self, symbol):
+    def _order_win_one_symbol(self, symbol: str) -> bool:
+        """
+        Checks if order order met winning conditons
+        with symbol given in function
+        """
         piece_board = self._board.board()
         board = []
         for row in piece_board:
@@ -107,7 +161,11 @@ class Game():
             return True
         return False
 
-    def _check_horizontal(self, board, symbol):
+    def _check_horizontal(self, board: "Board", symbol: str) -> bool:
+        """
+        Checks if order wins along horizontal axis
+        Return True if conditions are met
+        """
         searched = [symbol, symbol, symbol, symbol, symbol]
         avoided = [symbol, symbol, symbol, symbol, symbol, symbol]
         for row in board:
@@ -119,7 +177,11 @@ class Game():
                     return True
         return False
 
-    def _check_diagonal(self, b, symbol):
+    def _check_diagonal(self, b: "Board", symbol: str) -> bool:
+        """
+        Check if order wins along diagonal axis
+        Returns true if contitions are met
+        """
         searched = [symbol, symbol, symbol, symbol, symbol]
         avoided = [symbol, symbol, symbol, symbol, symbol, symbol]
         diagonal_l_1 = [b[0][0], b[1][1], b[2][2], b[3][3], b[4][4], b[5][5]]
@@ -140,7 +202,11 @@ class Game():
                 if diagonal != avoided:
                     return True
 
-    def _check_vertical(self, board, symbol):
+    def _check_vertical(self, board: "Board", symbol: str) -> bool:
+        """
+        Check if order wins along vertical axis
+        Returns True if conditions are met
+        """
         searched = [symbol, symbol, symbol, symbol, symbol]
         avoided = [symbol, symbol, symbol, symbol, symbol, symbol]
         for i in range(size):
@@ -155,7 +221,11 @@ class Game():
                     return True
         return False
 
-    def chaos_win(self):
+    def chaos_win(self) -> bool:
+        """
+        Check if chaos win
+        Returns True if conditions are met
+        """
         for row in self._board.board():
             for piece in row:
                 if piece.symbol() == "":
@@ -164,6 +234,10 @@ class Game():
         return True
 
     def _choose_enemy_based_on_modes(self):
+        """
+        Based on self._gamemode and self._side chooses
+        enemy to play against in game
+        """
         if self._gamemode == "Easy":
             self._enemy = EnemyRandom("EnemyRandom")
         if self._gamemode == "Hard":
@@ -172,27 +246,45 @@ class Game():
             if self._side == "Chaos":
                 self._enemy = EnemyAIOrder("EnemyAIOrder", self._board)
 
-    def _place_circle(self, board, row, col):
+    def _place_circle(self, board: "Board", row: int, col: int):
+        """
+        Places circle on board
+        """
         if self.position_ocupied(board, row, col):
             raise OverwriteError()
         piece = Piece(row, col, "O")
         board.set_last_move(piece)
         board.place(piece)
 
-    def _place_x(self, board, row, col):
+    def _place_x(self, board: "Board", row: int, col: int):
+        """
+        Places x on board
+        """
         if self.position_ocupied(board, row, col):
             raise OverwriteError()
         piece = Piece(row, col, "X")
         board.set_last_move(piece)
         board.place(piece)
 
-    def position_ocupied(self, board, row, col):
+    def position_ocupied(self, board: "Board", row: int, col: int) -> bool:
+        """
+        Returns True if position defined as row and col on
+        given board is occupied
+        """
         piece = board.board()[row][col]
         if piece.symbol() == "":
             return False
         return True
 
     def player_move(self):
+        """
+        Allows player to move that consist of:
+        -choosing a tile on board
+        -based on placement of mouse on the board player chooses tile
+        -based on click the symbol is chosen:
+            *  right click -> circle
+            *  left click -> x
+        """
         run = True
         while run:
             for event in pygame.event.get():
@@ -220,6 +312,11 @@ class Game():
                         run = False
 
     def enemy_move(self):
+        """
+        Allows for enemy to place its piece on board:
+        piece is selecteda by enemy methods
+        This function only places element on board
+        """
         row, col = self._enemy.choose_index(self._board)
         symbol = self._enemy.choose_symbol()
         if symbol == "X":
@@ -230,18 +327,29 @@ class Game():
             raise SymbolError("Symbol error occured")
 
     def order_move(self):
+        """
+        Allows enemy or player assosiated with order to move
+        """
         if self._side == "Order":
             self.player_move()
         else:
             self.enemy_move()
 
     def chaos_move(self):
+        """
+        Allows player assosiated with chaos to move
+        """
         if self._side == "Chaos":
             self.player_move()
         else:
             self.enemy_move()
 
     def play(self):
+        """
+        Main method of this class:
+        -conveys the whole game
+
+        """
         self.board().draw(self._win.win())
         self._win.update()
         self._after_action = "Exit"

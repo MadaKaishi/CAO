@@ -1,6 +1,7 @@
 import pygame
 from .constants import BLACK, COLS, ROWS, SQUARE_SIZE, WHITE
 from .piece import Piece
+from .window import Window
 
 
 class OverwriteError(Exception):
@@ -15,13 +16,13 @@ class Board:
             self.crate_board()
         self._last_move = None
 
-    def set_last_move(self, piece):
+    def set_last_move(self, piece: "Piece"):
         self._last_move = piece
 
     def last_move(self):
         return self._last_move
 
-    def draw_squares(self, win):
+    def draw_squares(self, win: "Window"):
         win.fill(BLACK)
         for row in range(ROWS):
             for col in range(COLS):
@@ -34,18 +35,18 @@ class Board:
                 temp_list.append(Piece(row, column, ""))
             self._board.append(temp_list)
 
-    def place(self, piece):
+    def place(self, piece: "Piece"):
         self._board[piece.row()][piece.col()] = piece
 
-    def board(self):
+    def board(self: "Board") -> "Board":
         return self._board
 
-    def draw(self, win):
+    def draw(self, win: "Window"):
         self.draw_squares(win)
         for row in range(ROWS):
             for col in range(COLS):
                 piece = self._board[row][col]
                 piece.draw(win)
 
-    def get_symbol_from_tile(self, row, col):
+    def get_symbol_from_tile(self, row: int, col: int):
         return self._board[row][col].symbol()
