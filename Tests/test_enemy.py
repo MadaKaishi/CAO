@@ -1,8 +1,9 @@
 from classes.board import Board
-from classes.enemy import EnemyRandom, GameSupposedToBeFinished
+from classes.enemy import EnemyAIOrder, EnemyRandom, GameSupposedToBeFinished
 from classes.piece import Piece
-from classes.constants import ROWS, COLS
+from classes.constants import ROWS, COLS, BOARD_SIZE as size
 import pytest
+
 
 def test_enemy_random_create():
     enemy = EnemyRandom("Enemy")
@@ -32,3 +33,25 @@ def test_enemy_choose_idex_full_board():
             board.place(piece)
     with pytest.raises(GameSupposedToBeFinished):
         enemy.choose_index(board)
+
+
+def test_order_enemy_create():
+    board = Board()
+    enemy = EnemyAIOrder("Enemy", board)
+    assert enemy.name() == "Enemy"
+    assert enemy.board() == board
+
+
+def test_order_enemy_middle_rectangle():
+    board = Board()
+    enemy = EnemyAIOrder("Enemy", board)
+    middle_board = []
+    for row in range(ROWS-2):
+        temp_list = []
+        for col in range(COLS-2):
+            temp_list.append("")
+        middle_board.append(temp_list)
+    enemy_middle = enemy._get_middle_rectangle(board)
+    for row in range(size-2):
+        for col in range(size-2):
+            enemy_middle[row][col] == middle_board[row][col]

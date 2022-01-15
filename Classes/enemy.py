@@ -1,5 +1,7 @@
 from random import choice
+from tkinter.tix import ROW
 from .board import Board
+from .constants import BOARD_SIZE as size, COLS, ROWS
 
 
 class GameSupposedToBeFinished(Exception):
@@ -39,8 +41,126 @@ class EnemyAIOrder(Enemy):
         super().__init__(name)
         self._board = board
 
-    def move(self):
+    def board(self):
+        return self._board
+
+    def choose_index(self, board: "Board"):
+        # scan middle 4 x 4 of board
+        middle_rect = self._get_middle_rectangle(board)
+        # search for possibilities of placing 4 in row
+        index, action = self._analize_middle_square(middle_rect, "X", "O")
+        # chooses the best location
+        if action == "row":
+            empty_tiles = []
+            for col in range(1, COLS-1):
+                if middle_rect[index+1, col] == "":
+                    empty_tiles.append((index+1, col))
+            return choice(empty_tiles)
+        if action == "col":
+            empty_tiles = []
+            for row in range(1, ROWS-1):
+                if middle_rect[row, index+1] == "":
+                    empty_tiles.append((row, index+1))
+            return choice(empty_tiles)
+        if action == "diag":
+
+
+    def choose_symbol(self):
         pass
+
+    def _get_middle_rectangle(self, board: "Board"):
+        list_board = board.board()
+        middle_rect = []
+        middle_rows = list_board[1:5]
+        for row in middle_rows:
+            temp_list = []
+            for col in range(1, COLS-1):
+                temp_list.append(row[col].symbol())
+            middle_rect.append(temp_list)
+        return middle_rect
+
+    def _analize_middle_square(self, middle_square: list, symbol_1, symbol_2):
+        row_best = self._analize_rows(middle_square, symbol_1, symbol_2)
+        col_best = self._analize_cols(middle_square, symbol_1, symbol_2)
+        diag_best = self._analize_diagonals(middle_square, symbol_1, symbol_2)
+        best = max(row_best, col_best, diag_best)
+        if best == row_best:
+            action = "row"
+        if best == col_best:
+            action == "col"
+        if best == diag_best:
+            action = "diag"
+        return best, action
+
+    def _analize_rows(self, middle_square: list, symbol_1, symbol_2):
+        row_tiers = {}
+        for row in range(ROWS-2):
+            tier = 0
+            for piece in middle_square[row]:
+                if piece == f"{symbol_1}":
+                    tier += 1
+                if piece == f"{symbol_2}":
+                    tier = 0
+                    break
+            row_tiers[row] = (tier, symbol_1)
+            tier = 0
+            for piece in middle_square[row]:
+                if piece == f"{symbol_2}":
+                    tier += 1
+                if piece == f"{symbol_1}":
+                    tier = 0
+                    break
+            row_tiers[row] = (tier, symbol_2)
+        # checks what row is the best (if tie then first one)
+        for key in row_tiers:
+            actual = 0
+            row = 0
+            if row_tiers[key][0] > actual:
+                row = key
+        return row
+
+    def _analize_cols(self, middle_square: list, symbol_1, symbol_2):
+        column_list = []
+        for col in range(COLS-2):
+            temp_list = []
+            for row in range(ROWS-2):
+                temp_list.append(middle_square[row][col])
+            column_list.append(temp_list)
+        col_best = self._analize_rows(column_list, symbol_1, symbol_2)
+        return col_best
+
+    def _analize_diagonals(self, middle_square: list, symbol_1, symbol_2):
+        diagonal_tiers = {}
+        diagonal_1 = []
+        diagonal_2 = []
+        for row in range(ROWS-2):
+            for col in range(COLS-2):
+                diagonal_1.append(middle_square[row][col])
+                diagonal_2.append(middle_square[ROWS-row][col])
+        diagonals = [diagonal_1, diagonal_2]
+        for diagonal in diagonals:
+            tier = 0
+            for piece in diagonal:
+                if piece == f"{symbol_1}":
+                    tier += 1
+                if piece == f"{symbol_2}":
+                    tier = 0
+                    break
+            diagonal_tiers[row] = (tier, symbol_1)
+            tier = 0
+            for piece in diagonal:
+                if piece == f"{symbol_2}":
+                    tier += 1
+                if piece == f"{symbol_1}":
+                    tier = 0
+                    break
+            diagonal_tiers[row] = (tier, symbol_2)
+        for key in diagonal_tiers:
+            actual = 0
+            row = 0
+            if diagonal_tiers[key][0] > actual:
+                row = key
+        return row
 
 
 class EnemyAIChaos(Enemy):
@@ -48,6 +168,9 @@ class EnemyAIChaos(Enemy):
         super().__init__(name)
         self._moves_dict = self.par_movement()
         self._board = board
+
+    def board(self):
+        return self._board
 
     def get_last_move(self, board: "Board") -> tuple:
         last_placed = board.last_move()

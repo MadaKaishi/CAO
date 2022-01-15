@@ -44,6 +44,7 @@ def test_game_opponent_choose_AIOrder():
 # Testing if game catches win conditions
 # Down are just coded win conditions
 
+
 def test_win_vert():
     game = Game()
     p1 = Piece(0, 0, "X")
@@ -81,6 +82,7 @@ def test_win_horizontal():
     for piece in piece_list:
         game.board().place(piece)
     assert game.order_win()
+
 
 def test_win_hotizontal_ver2():
     game = Game()

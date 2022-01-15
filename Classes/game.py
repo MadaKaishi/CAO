@@ -177,21 +177,29 @@ class Game():
                     return True
         return False
 
-    def _check_diagonal(self, b: "Board", symbol: str) -> bool:
+    def _check_diagonal(self, board: "Board", symbol: str) -> bool:
         """
         Check if order wins along diagonal axis
         Returns true if contitions are met
         """
         searched = [symbol, symbol, symbol, symbol, symbol]
         avoided = [symbol, symbol, symbol, symbol, symbol, symbol]
-        diagonal_l_1 = [b[0][0], b[1][1], b[2][2], b[3][3], b[4][4], b[5][5]]
-        diagonal_l_2 = [b[0][5], b[1][4], b[2][3], b[3][2], b[4][1], b[5][0]]
-        diagonal_s_3 = [b[1][0], b[2][1], b[3][2], b[4][3], b[5][4]]
-        diagonal_s_4 = [b[4][0], b[3][1], b[2][2], b[1][3], b[0][4]]
-        diagonal_s_5 = [b[5][1], b[4][2], b[3][3], b[2][4], b[5][1]]
-        diagonal_s_6 = [b[0][1], b[1][2], b[2][3], b[3][4], b[4][5]]
-        dia_long = [diagonal_l_1, diagonal_l_2]
-        dia_short = [diagonal_s_3, diagonal_s_4, diagonal_s_5, diagonal_s_6]
+        diagonal_long_1 = []
+        diagonal_long_2 = []
+        diagonal_short_1 = []
+        diagonal_short_2 = []
+        diagonal_short_3 = []
+        diagonal_short_4 = []
+        for index in range(size):
+            diagonal_long_1.append(board[index][index])
+            diagonal_long_2.append(board[index][size-1-index])
+        for index in range(size-1):
+            diagonal_short_1.append(board[index+1][index])
+            diagonal_short_2.append(board[index][index+1])
+            diagonal_short_3.append(board[size-1-(index+1)][index])
+            diagonal_short_4.append(board[size-1-index][index+1])
+        dia_long = [diagonal_long_1, diagonal_long_2]
+        dia_short = [diagonal_short_1, diagonal_short_2, diagonal_short_3, diagonal_short_4]
         if searched in dia_short:
             return True
         for diagonal in dia_long:
@@ -347,8 +355,10 @@ class Game():
     def play(self):
         """
         Main method of this class:
-        -conveys the whole game
-
+        allows for game to be played,
+        handles the board manipulation both by player and opponent,
+        order and chaos plays in turns, if game is interrupted by
+        leaving it, board and data needed to recreate it is saved to file
         """
         self.board().draw(self._win.win())
         self._win.update()
@@ -383,6 +393,13 @@ class Game():
                 pygame.quit()
 
     def prepare_game(self):
+        """
+        Prepares data needed to start the game:
+        if save file is avaliable game can be loaded from file,
+        if save is not avaliable or players selects new game
+        this method gathers data about:
+        side of player, difficulty of enemy using GUIs
+        """
         self._win = Window(WIDTH, HEIGHT, "Chaos and Order")
         self._win.title_screen()
         if self._win.action() == "New":
@@ -405,14 +422,11 @@ class Game():
         self._choose_enemy_based_on_modes()
 
     def prepare_retry(self):
+        """
+        This method gathers data to replay the game
+        """
         self._win.side_choose_window()
         self._win.difficulty_choose_window()
         self._side = self._win.side()
         self._gamemode = self._win.gamemode()
-        if self._gamemode == "Easy":
-            self._enemy = EnemyRandom("Enemy")
-        if self._gamemode == "Hard":
-            if self._side == "Order":
-                self._enemy = EnemyAIChaos("Enemy", self._board)
-            if self._side == "Chaos":
-                self._enemy = EnemyAIOrder("Enemy", self._board)
+        self._choose_enemy_based_on_modes()
