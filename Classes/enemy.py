@@ -1,5 +1,6 @@
 from pickle import TRUE
 from random import choice
+import re
 from .board import Board
 from .constants import BOARD_SIZE as size, COLS, ROWS
 
@@ -49,17 +50,28 @@ class EnemyAIOrder(Enemy):
         # scan middle 4 x 4 of board
         middle_rect = self._get_middle_rectangle(board)
         self._middle_rect = middle_rect
-        # search for possibilities of placing 4 in row
-        collection, index, value = self._analize_middle_square(middle_rect, "X", "O")
-        # chooses the best location
+        self._middle_square_full = False
+        index_tuple = self._prepare_index_from_middle_rect(board, middle_rect)
+        return index_tuple
+
+    def _prepare_index_from_middle_rect(self, board, middle_rect: list):
         repeat = True
         while repeat:
             repeat = False
+            collection, index, value = self._analize_middle_square(middle_rect, "X", "O")
+            if value == -1:
+                empty_tiles = []
+                for row in range(ROWS):
+                    for col in range(COLS):
+                        if board.board()[row][col].symbol() == "":
+                            empty_tiles.append((row, col))
+                            self._middle_square_full = True
+                return choice(empty_tiles)
             if collection == 0:
                 if value == 4:
                     if board.board()[index+1][0].symbol() == "":
                         chosen = (index+1, 0)
-                    if board.board()[index+1][COLS-1].symbol() == "":
+                    elif board.board()[index+1][COLS-1].symbol() == "":
                         chosen = (index+1, COLS-1)
                     else:
                         self._tiers[collection][index] = -1
@@ -74,7 +86,7 @@ class EnemyAIOrder(Enemy):
                 if value == 4:
                     if board.board()[0][index+1].symbol() == "":
                         chosen = (0, index+1)
-                    if board.board()[ROWS-1][index+1].symbol() == "":
+                    elif board.board()[ROWS-1][index+1].symbol() == "":
                         chosen = (ROWS-1, index+1)
                     else:
                         self._tiers[collection][index] = -1
@@ -91,7 +103,7 @@ class EnemyAIOrder(Enemy):
                     if value == 4:
                         if board.board()[0][0].symbol() == "":
                             chosen = (0, 0)
-                        if board.board()[ROWS-1][COLS-1].symbol() == "":
+                        elif board.board()[ROWS-1][COLS-1].symbol() == "":
                             chosen = (ROWS-1, COLS-1)
                         else:
                             self._tiers[collection][index] = -1
@@ -105,7 +117,7 @@ class EnemyAIOrder(Enemy):
                     if value == 4:
                         if board.board()[ROWS-1][0].symbol() == "":
                             return (ROWS-1, 0)
-                        if board.board()[0][COLS-1].symbol() == "":
+                        elif board.board()[0][COLS-1].symbol() == "":
                             chosen = (0, COLS-1)
                         else:
                             self._tiers[collection][index] = -1
@@ -113,13 +125,14 @@ class EnemyAIOrder(Enemy):
                     else:
                         for rowcol in range(size-2):
                             if middle_rect[size-3-rowcol][rowcol] == "":
-                                empty_tiles.append((rowcol+1, rowcol+1))
+                                empty_tiles.append((size-3-rowcol+1, rowcol+1))
                         chosen = choice(empty_tiles)
         self._choose_symbol_atributes = collection, index
-        print(chosen)
         return chosen
 
     def choose_symbol(self):
+        if self._middle_square_full:
+            return choice(["X", "O"])
         collection, index = self._choose_symbol_atributes
         if collection == 0:
             if "X" in self._middle_rect[index]:
@@ -146,8 +159,6 @@ class EnemyAIOrder(Enemy):
                         return "X"
                 return "O"
 
-
-
     def _get_middle_rectangle(self, board: "Board"):
         list_board = board.board()
         middle_rect = []
@@ -163,8 +174,7 @@ class EnemyAIOrder(Enemy):
         self._analize_rows(middle_square, symbol_1, symbol_2)
         self._analize_cols(middle_square, symbol_1, symbol_2)
         self._analize_diagonals(middle_square, symbol_1, symbol_2)
-        print(self._tiers)
-        best = 0
+        best = -1
         best_collection = 0
         best_index = 0
         for index_1, collection in enumerate(self._tiers):
