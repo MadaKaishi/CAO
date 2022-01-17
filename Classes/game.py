@@ -10,10 +10,17 @@ import os
 
 
 class SymbolError(Exception):
+    """
+    Error that occures when symbol is other than X or O
+    """
     pass
 
 
 class SaveCorruptedError(Exception):
+    """
+    Error that occures when save is not present or data that
+    it containes is corrupted
+    """
     pass
 
 
@@ -31,11 +38,11 @@ class Game():
     def __init__(self):
         """
         Initiates the game with:
-        empyt boarder,
-        turn set to be played as order,
-        stop set as false,
-        winner set as none,
-        action after finishing game as none
+        empyt board,
+        turn is set to be played as order,
+        stop is set as false,
+        winner is set as None,
+        action_after_finishing game is set as none
         """
         self._board = Board()
         self._turn = "Order"
@@ -95,6 +102,7 @@ class Game():
     def save_game(self):
         """
         Saves game file localted in path specified in constants file
+        Each line in file represents one position
         """
         with open(f"{PATH}", "w") as f:
             f.write(f"{self._turn}\n")
@@ -153,13 +161,13 @@ class Game():
             for piece in row:
                 temp_list.append(piece.symbol())
             board.append(temp_list)
-        if self._check_horizontal(board, symbol):
+        if self._check_horizontal(board, symbol):  # check if win in rows
             return True
-        if self._check_vertical(board, symbol):
+        if self._check_vertical(board, symbol):  # check if win in cols
             return True
-        if self._check_diagonal(board, symbol):
+        if self._check_diagonal(board, symbol):  # check if win in diagonals
             return True
-        return False
+        return False  # if conditions are not met, returns false
 
     def _check_horizontal(self, board: "Board", symbol: str) -> bool:
         """
@@ -170,10 +178,10 @@ class Game():
         avoided = [symbol, symbol, symbol, symbol, symbol, symbol]
         for row in board:
             if row[:size-1] == searched:
-                if row != avoided:
+                if row != avoided:  # if there are not 6 symbols in the row
                     return True
             if row[1:size] == searched:
-                if row != avoided:
+                if row != avoided:  # if there are not 6 symbols in the row
                     return True
         return False
 
@@ -204,10 +212,10 @@ class Game():
             return True
         for diagonal in dia_long:
             if diagonal[:size-1] == searched:
-                if diagonal != avoided:
+                if diagonal != avoided:  # if there  are not 6 symbols
                     return True
             if diagonal[1:size] == searched:
-                if diagonal != avoided:
+                if diagonal != avoided:  # if there are not 6 symbols
                     return True
 
     def _check_vertical(self, board: "Board", symbol: str) -> bool:
@@ -222,10 +230,10 @@ class Game():
             for row in board:
                 tem_list.append(row[i])
             if tem_list[:size-1] == searched:
-                if tem_list != avoided:
+                if tem_list != avoided:  # if there are not 6 symbols
                     return True
             if tem_list[1:size] == searched:
-                if tem_list != avoided:
+                if tem_list != avoided:  # if there are not 6 symbols
                     return True
         return False
 
@@ -235,16 +243,17 @@ class Game():
         Returns True if conditions are met
         """
         for row in self._board.board():
-            for piece in row:
+            for piece in row:  # if the board is not full
                 if piece.symbol() == "":
                     return False
-        self._winner = "Chaos"
+        self._winner = "Chaos"  # sets the winner as chaos
         return True
 
     def _choose_enemy_based_on_modes(self):
         """
         Based on self._gamemode and self._side chooses
         enemy to play against in game
+        sets enemy to self._enemy
         """
         if self._gamemode == "Easy":
             self._enemy = EnemyRandom("EnemyRandom")
@@ -296,23 +305,25 @@ class Game():
         run = True
         while run:
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
+                if event.type == pygame.QUIT:  # when player left
                     self.save_game()
                     run = False
                     self._stop = True
                     self._after_action = "Exit"
                 elif event.type == pygame.KEYDOWN:
-                    if event.key == K_ESCAPE:
+                    if event.key == K_ESCAPE:  # when esc is pressed
                         self.save_game()
                         self._stop = True
                         self._after_action = "Exit"
                         run = False
                         pygame.quit()
+                # when left button is pressed
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     row, col = self.win().check_mouse_pos()
                     if not self.position_ocupied(self._board, row, col):
                         self._place_x(self._board, row, col)
                         run = False
+                # when right button is pressed
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
                     row, col = self.win().check_mouse_pos()
                     if not self.position_ocupied(self._board, row, col):
@@ -379,9 +390,9 @@ class Game():
                 self._turn = "Order"
             if self.chaos_win():
                 break
-        if self._winner is not None:
+        if self._winner is not None:  # when game ended
             if os.path.isfile(f"{PATH}"):
-                self.delete_save()
+                self.delete_save()  # file is deleted
             if self._winner != self._side:
                 self._win.game_window_loose()
             else:

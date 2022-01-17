@@ -1,7 +1,7 @@
 BOARD_SIZE = 6
 TABLE_FILLMENT_HORIZONTAL = "+---"
 TABLE_FILLMENT_VERTICAL = "|"
-PATH = "saves/save.txt"
+PATH = "save.txt"
 
 WIDTH = 600
 HEIGHT = 600

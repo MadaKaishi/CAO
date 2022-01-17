@@ -1,6 +1,4 @@
-from pickle import TRUE
 from random import choice
-import re
 from .board import Board
 from .constants import BOARD_SIZE as size, COLS, ROWS
 
@@ -10,18 +8,39 @@ class GameSupposedToBeFinished(Exception):
 
 
 class Enemy:
+    """Class Enemy:
+    Basic class that is further developed in more advanced enemy variants.
+    Only argument is its name
+    """
     def __init__(self, name=""):
+        """
+        Initializes enemy object
+        """
         self._name = name
 
     def name(self) -> str:
+        """
+        Returns name of enemy
+        """
         return self._name
 
 
 class EnemyRandom(Enemy):
+    """
+    Class EnemyRandom:
+    it is derrived from Enemy class,
+    its enemy that makes random moves, placing
+    random symbols on empty fields on board
+    """
     def __init__(self, name=""):
+        """Initializes RandomEnemy object"""
         super().__init__(name)
 
     def choose_index(self, board: "Board") -> tuple:
+        """
+        Specifies which tiles are empty and the choosess one of them.
+        Returns tuple of row and column of tile chosen
+        """
         empty_tiles = []
         iterable_board = board.board()
         for row in iterable_board:
@@ -33,49 +52,68 @@ class EnemyRandom(Enemy):
         return choice(empty_tiles)
 
     def choose_symbol(self, board=None) -> str:
+        """
+        Chooses random symbol (between X and O)
+        """
         possible_symbols = ["X", "O"]
         return choice(possible_symbols)
 
 
 class EnemyAIOrder(Enemy):
-    def __init__(self, name="", board=None):
+    """Class: EnemyAIOrder
+    Class represents advanced enemy that plays on order side.
+    Its movement are determined by analyzing middle 4 x 4 square.
+    """
+    def __init__(self, name: str = "", board: "Board" = None):
+        """Initializes EnemyAIOrder object"""
         super().__init__(name)
         self._board = board
         self._tiers = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0]]
 
-    def board(self):
+    def board(self) -> str:
+        """Returns self._board argument"""
         return self._board
 
-    def choose_index(self, board: "Board"):
+    def choose_index(self, board: "Board") -> tuple:
+        """
+        Chooses index based on square analize
+        """
         # scan middle 4 x 4 of board
         middle_rect = self._get_middle_rectangle(board)
         self._middle_rect = middle_rect
         self._middle_square_full = False
+        # prepares the tuple of row and col
         index_tuple = self._prepare_index_from_middle_rect(board, middle_rect)
         return index_tuple
 
-    def _prepare_index_from_middle_rect(self, board, middle_rect: list):
+    def _prepare_index_from_middle_rect(self, board: list, middle_rect: list):
+        """
+        Prepares row and column based on tier list represented by board argument.
+        """
+        # To convert tiers of middle 4 x 4 square to tiers of 6 x 6 board, 1 is added
+        # to all indexes
         repeat = True
-        while repeat:
-            repeat = False
+        while repeat:  # while repetition is needed
+            repeat = False  # set repeat to False to avoid permanent loop
             collection, index, value = self._analize_middle_square(middle_rect, "X", "O")
-            if value == -1:
+            if value == -1:  # if there are not any good movements avaliable
                 empty_tiles = []
                 for row in range(ROWS):
                     for col in range(COLS):
                         if board.board()[row][col].symbol() == "":
                             empty_tiles.append((row, col))
                             self._middle_square_full = True
-                return choice(empty_tiles)
-            if collection == 0:
-                if value == 4:
+                return choice(empty_tiles)  # choose random tile
+            if collection == 0:  # if best result is in rows
+                if value == 4:  # if win is avaliable
                     if board.board()[index+1][0].symbol() == "":
                         chosen = (index+1, 0)
                     elif board.board()[index+1][COLS-1].symbol() == "":
                         chosen = (index+1, COLS-1)
                     else:
-                        self._tiers[collection][index] = -1
-                        repeat = TRUE
+                        # if places that gives win are taken
+                        self._tiers[collection][index] = -1  # sets tier of this row and column to -1
+                        repeat = True  # repetition of choosing row and column is needed
                 else:
                     empty_tiles = []
                     for col in range(COLS-2):
@@ -97,9 +135,9 @@ class EnemyAIOrder(Enemy):
                         if middle_rect[row][index] == "":
                             empty_tiles.append((row+1, index+1))
                     chosen = choice(empty_tiles)
-            if collection == 2:
+            if collection == 2:  # if best tier is contained in diagonals
                 empty_tiles = []
-                if index == 0:
+                if index == 0:  # if its first diagonal
                     if value == 4:
                         if board.board()[0][0].symbol() == "":
                             chosen = (0, 0)
@@ -113,7 +151,7 @@ class EnemyAIOrder(Enemy):
                             if middle_rect[rowcol][rowcol] == "":
                                 empty_tiles.append((rowcol+1, rowcol+1))
                         chosen = choice(empty_tiles)
-                if index == 1:
+                if index == 1:  # if its second diagonal
                     if value == 4:
                         if board.board()[ROWS-1][0].symbol() == "":
                             return (ROWS-1, 0)
@@ -130,16 +168,19 @@ class EnemyAIOrder(Enemy):
         self._choose_symbol_atributes = collection, index
         return chosen
 
-    def choose_symbol(self):
+    def choose_symbol(self) -> str:
+        """
+        Chooses symbol based on position determined by choose_index
+        """
         if self._middle_square_full:
             return choice(["X", "O"])
         collection, index = self._choose_symbol_atributes
-        if collection == 0:
+        if collection == 0:  # if best action is to place piece in rows
             if "X" in self._middle_rect[index]:
                 return "X"
             else:
                 return "O"
-        if collection == 1:
+        if collection == 1:  # if best action is to place piece in collumns
             symbols_form_column = []
             for row in range(size-2):
                 symbols_form_column.append(self._middle_rect[row][index])
@@ -147,22 +188,23 @@ class EnemyAIOrder(Enemy):
                 return "X"
             else:
                 return "O"
-        if collection == 2:
-            if index == 0:
+        if collection == 2:  # if best action is to place piece on diagonals
+            if index == 0:  # diagonal 1
                 for rowcol in range(size-2):
                     if self._middle_rect[rowcol][rowcol] == "X":
                         return "X"
                 return "O"
-            if index == 1:
+            if index == 1:  # diaognal 2
                 for rowcol in range(size-2):
                     if self._middle_rect[size-3-rowcol][rowcol] == "X":
                         return "X"
                 return "O"
 
-    def _get_middle_rectangle(self, board: "Board"):
+    def _get_middle_rectangle(self, board: "Board") -> list:
+        """Returns symbols from middle 4 x 4 rectangle in list form"""
         list_board = board.board()
         middle_rect = []
-        middle_rows = list_board[1:5]
+        middle_rows = list_board[1:(size-1)]
         for row in middle_rows:
             temp_list = []
             for col in range(1, COLS-1):
@@ -170,9 +212,16 @@ class EnemyAIOrder(Enemy):
             middle_rect.append(temp_list)
         return middle_rect
 
-    def _analize_middle_square(self, middle_square: list, symbol_1, symbol_2):
+    def _analize_middle_square(self, middle_square: list, symbol_1: str, symbol_2: str) -> tuple:
+        """
+        Updates tiers of rows, columns and diagonals and chooses best option,
+        based on not disturbed same symbol appearance
+        """
+        # upadtes tiers for rows
         self._analize_rows(middle_square, symbol_1, symbol_2)
+        # upadtes tiers for collumns
         self._analize_cols(middle_square, symbol_1, symbol_2)
+        # upadted tiers for diagonals
         self._analize_diagonals(middle_square, symbol_1, symbol_2)
         best = -1
         best_collection = 0
@@ -185,18 +234,20 @@ class EnemyAIOrder(Enemy):
                     best = tier
         return best_collection, best_index, best
 
-    def _analize_rows(self, middle_square: list, symbol_1, symbol_2):
+    def _analize_rows(self, middle_square: list, symbol_1: str, symbol_2: str):
+        """Analize rows and updates self._tiers[0]"""
         row_tier_list = self._get_tier_list_from_board(middle_square, symbol_1, symbol_2)
         row_list = self._tiers[0]
         new_row_list = []
         for index in range(len(row_list)):
-            if row_list[index] != -1:
+            if row_list[index] != -1:  # if not disturbed by other symbol
                 new_row_list.append(row_tier_list[index])
             else:
                 new_row_list.append(-1)
         self._tiers[0] = new_row_list
 
-    def _analize_cols(self, middle_square: list, symbol_1, symbol_2):
+    def _analize_cols(self, middle_square: list, symbol_1: str, symbol_2: str):
+        """Analize collumns and updates self._tiers[1]"""
         column_list = []
         for col in range(COLS-2):
             temp_list = []
@@ -213,7 +264,8 @@ class EnemyAIOrder(Enemy):
                 new_col_list.append(-1)
         self._tiers[1] = new_col_list
 
-    def _analize_diagonals(self, middle_square: list, symbol_1, symbol_2):
+    def _analize_diagonals(self, middle_square: list, symbol_1: str, symbol_2: str):
+        """Analize diagonals and updates self._tiers[2]"""
         diagonal_1 = []
         diagonal_2 = []
         for index in range(size-2):
@@ -230,7 +282,13 @@ class EnemyAIOrder(Enemy):
                 new_diag_list.append(-1)
         self._tiers[2] = new_diag_list
 
-    def _get_tier_list_from_board(self, symbol_list: list, symbol_1: str, symbol_2: str):
+    def _get_tier_list_from_board(self, symbol_list: list, symbol_1: str, symbol_2: str) -> list:
+        """
+        When its given list of collections it analizes each collection,
+        tier of each collection is based on not disturbed appearance of one
+        symbol, if second symbol appears in collecion its tier is placed
+        as -1 and its not taken in consideration when indexes are chosen
+        """
         tier_list = []
         for collection in symbol_list:
             tier_1 = 0
@@ -252,15 +310,24 @@ class EnemyAIOrder(Enemy):
 
 
 class EnemyAIChaos(Enemy):
-    def __init__(self, name="", board=None):
+    """Class: EnemyAIChaos:
+    class that represents advanced enemy playing on chaos side,
+    movements are determined by reaction to last placed piece by player
+    """
+    def __init__(self, name: str = "", board: "Board" = None):
+        """
+        Initializes EnemyAIChaos
+        """
         super().__init__(name)
-        self._moves_dict = self.par_movement()
+        self._moves_dict = self._par_movement()
         self._board = board
 
-    def board(self):
+    def board(self) -> "Board":
+        """Returns self._board"""
         return self._board
 
-    def get_last_move(self, board: "Board") -> tuple:
+    def _get_last_move(self, board: "Board") -> tuple:
+        """Returns row, col and symbol of last piece placed"""
         last_placed = board.last_move()
         row = last_placed.row()
         col = last_placed.col()
@@ -268,7 +335,8 @@ class EnemyAIChaos(Enemy):
         return row, col, sym
 
     def choose_index(self, board: "Board") -> tuple:
-        row, col, _ = self.get_last_move(board)
+        """Chooses row and column based on last piece placed"""
+        row, col, _ = self._get_last_move(board)
         rowcol = str(row)+str(col)
         wanted_rowcol = self._moves_dict[rowcol]
         wanted_row = int(wanted_rowcol[0])
@@ -276,7 +344,8 @@ class EnemyAIChaos(Enemy):
         return(wanted_row, wanted_col)
 
     def choose_symbol(self) -> str:
-        row, col, sym = self.get_last_move(self._board)
+        """Returns symbol based on last piece placed"""
+        row, col, sym = self._get_last_move(self._board)
         corner = [(0, 0), (5, 0), (0, 5), (5, 5)]
         if (row, col) not in corner:
             if sym == "X":
@@ -286,7 +355,8 @@ class EnemyAIChaos(Enemy):
         else:
             return sym
 
-    def par_movement(self) -> dict:
+    def _par_movement(self) -> dict:
+        """Creates dictionary of best chaos responses"""
         moves_dictionary = {
             "00": "55",
             "01": "45",

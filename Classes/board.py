@@ -52,6 +52,7 @@ class Board:
     def _crate_board(self):
         """
         Creates board in form of nested lists filled with empty strings
+        Appends self._board variable
         """
         for row in range(ROWS):
             temp_list = []
@@ -61,7 +62,7 @@ class Board:
 
     def place(self, piece: "Piece"):
         """
-        Places piece in position given by itself
+        Places piece in position given by its row and column
         """
         self._board[piece.row()][piece.col()] = piece
         self.set_last_move(piece)
@@ -82,7 +83,7 @@ class Board:
                 piece = self._board[row][col]
                 piece.draw(win)
 
-    def get_symbol_from_tile(self, row: int, col: int):
+    def get_symbol_from_tile(self, row: int, col: int) -> str:
         """
         Returns symbol from row and column given
         """
