@@ -28,12 +28,12 @@ class Game():
     """
     Class game represents game of Chaos and Order
     Its the main calss of this program
-    It is connected to other classes like:
-    -Border
-    -Piece
-    -Enemy
-    -Window
-    Basing of methods used in other classes it hadles the game
+    It is connected to other classes like:\n
+    -Border\n
+    -Piece\n
+    -Enemy\n
+    -Window\n
+    Based on its methods and methods used in other classes it handles the game
     """
     def __init__(self):
         """
@@ -101,15 +101,16 @@ class Game():
 
     def save_game(self):
         """
-        Saves game file localted in path specified in constants file
+        Saves game file localted in path specified in constants file\n
         Each line in file represents one position
         """
         with open(f"{PATH}", "w") as f:
-            f.write(f"{self._turn}\n")
-            f.write(f"{self._side}\n")
-            f.write(f"{self._gamemode}\n")
+            f.write(f"{self._turn}\n")  # which turn is it
+            f.write(f"{self._side}\n")  # what side is player playing
+            f.write(f"{self._gamemode}\n")  # what difficulty player is playing
             for row in range(ROWS):
                 for col in range(COLS):
+                    # symbol of each piece, starting with upper row
                     f.write(f"{self._board.board()[row][col].symbol()}\n")
 
     def _load_game(self) -> tuple:
@@ -245,8 +246,8 @@ class Game():
         for row in self._board.board():
             for piece in row:  # if the board is not full
                 if piece.symbol() == "":
-                    return False
-        self._winner = "Chaos"  # sets the winner as chaos
+                    return False  # returns false
+        self._winner = "Chaos"  # else sets the winner as chaos
         return True
 
     def _choose_enemy_based_on_modes(self):
@@ -394,7 +395,7 @@ class Game():
             if os.path.isfile(f"{PATH}"):
                 self.delete_save()  # file is deleted
             if self._winner != self._side:
-                self._win.game_window_loose()
+                self._win.game_window_lose()
             else:
                 self._win.game_window_win()
             self._after_action = self._win.end_action()

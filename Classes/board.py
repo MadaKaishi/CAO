@@ -16,17 +16,20 @@ class Board:
     [[row],[row]...]
     Functions of this class are also able to use GUI to communicate with user
     """
+    PADDING = 4
+
     def __init__(self, board=None) -> "Board":
         """
         Initializes the board object, if board in form of list is given,
         the board is loaded with values contained in it, if not then
-        board is created with each tile filled with empty string
+        board is created with each tile filled with piece filled with
+        empty pieces
         """
         self._board = board
-        if self._board is None:
+        if self._board is None:  # if no board was given
             self._board = []
             self._crate_board()
-        self._last_move = None
+        self._last_move = None  # last move is set to none
 
     def set_last_move(self, piece: "Piece"):
         """
@@ -47,7 +50,10 @@ class Board:
         win.fill(BLACK)
         for row in range(ROWS):
             for col in range(COLS):
-                pygame.draw.rect(win, WHITE, ((row * SQUARE_SIZE)+2, (col * SQUARE_SIZE)+2, SQUARE_SIZE-4, SQUARE_SIZE-4))
+                x_cord = (row * SQUARE_SIZE) + (self.PADDING/2)
+                y_cord = (col * SQUARE_SIZE) + (self.PADDING/2)
+                side = SQUARE_SIZE - self.PADDING
+                pygame.draw.rect(win, WHITE, (x_cord, y_cord, side, side))
 
     def _crate_board(self):
         """

@@ -5,6 +5,15 @@ from classes.constants import ROWS, COLS, BOARD_SIZE as size
 import pytest
 
 
+# enemy tests
+
+def test_enemy():
+    enemy = Enemy("Enemy")
+    assert enemy.name() == "Enemy"
+
+
+# enemy random tests
+
 def test_enemy_random_create():
     enemy = EnemyRandom("Enemy")
     assert enemy.name() == "Enemy"
@@ -34,6 +43,8 @@ def test_enemy_choose_idex_full_board():
     with pytest.raises(GameSupposedToBeFinished):
         enemy.choose_index(board)
 
+
+#  enemy order AI tests
 
 def test_order_enemy_create():
     board = Board()
@@ -121,6 +132,8 @@ def test_order_enemy_finisher_move_X():
     assert index == (3, 0) or index == (3, 5)
     assert enemy.choose_symbol() == "X"
 
+
+# test enemy AI chaos
 
 def test_enemy_chaos_AI_create():
     enemy = EnemyAIChaos("Enemy")

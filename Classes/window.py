@@ -6,7 +6,18 @@ from .constants import BLACK, BUTTON_1_CORDS, BUTTON_2_CORDS, BUTTON_HEIGHT, BUT
 
 
 class Window:
+    """Class Window:
+    This class represents window that is displayed to user of program.
+    User can communicate with programs in certain situations using buttons
+    and interacting with them using mouse
+    """
     def __init__(self, width: int, height: int, caption: str):
+        """
+        Initializes the Window object
+        Width and height represents width and height of the window.
+        Caption defines name of window
+        Side, gamemode, action, game_end_action and save are set to None
+        """
         pygame.init()
         self._win = pygame.display.set_mode((width, height))
         pygame.display.set_caption(f"{caption}")
@@ -18,52 +29,73 @@ class Window:
         self.check_save()
 
     def end_action(self) -> Union[str, None]:
+        """Returns self._end_action"""
         return self._end_action
 
     def side(self) -> Union[str, None]:
+        """Returns self._side"""
         return self._side
 
     def gamemode(self) -> Union[str, None]:
+        """Returnes self._gamemode"""
         return self._gamemode
 
     def action(self) -> Union[str, None]:
+        """Returnes self._action"""
         return self._action
 
     def win(self) -> "Window":
+        """Returnes self._win"""
         return self._win
 
     def check_save(self):
+        """Returnes True is save file exist"""
         if exists(f"{PATH}"):
             self._is_save = True
         else:
             self._is_save = False
 
     def check_mouse_pos(self) -> tuple:
+        """Returnes row and column based od mouse position on board"""
         pos = pygame.mouse.get_pos()
         row, col = self.get_row_col_from_mouse(pos)
         return row, col
 
     def get_row_col_from_mouse(self, pos: tuple) -> tuple:
+        """Calculates row and column based on mouse position"""
         x, y = pos
         row = y//SQUARE_SIZE
         col = x//SQUARE_SIZE
         return int(row), int(col)
 
     def update(self):
+        """Updates window"""
         pygame.display.update()
 
     def draw_text(self, text: int, font: int, color: tuple, x: int, y: int):
+        """Draws text inside the rectangle"""
         textobj = font.render(text, 1, color)
         textrect = textobj.get_rect()
         textrect.topleft = (x, y)
         self._win.blit(textobj, textrect)
 
     def draw_text_auto_centered(self, text: str, font: int, color: tuple, y: int):
+        """Draws rectangle with text that is auto centered"""
         textobj = font.render(text, 1, color)
         textrect = textobj.get_rect(center=(WIDTH//2, y + BUTTON_HEIGHT//2))
         self._win.blit(textobj, textrect)
 
     def _generate_basic_window_other_than_title(self, text_title: str, text_button_1: str, text_button_2: str, action1: str, action2: str) -> str:
+        """
+        Generates basic window with parameters equal to given as arguments
+        Basic window consist of:\n
+        Header Caption (text_title)
+        Upper button with text (text_button_1)
+        Bottom button with text (text_button_2)
+        Acction connected to button_1
+        Acction connected to button_2
+        Method returnes action player have chosen
+        """
         run = True
         button_new_game = pygame.Rect(BUTTON_1_CORDS[0], BUTTON_1_CORDS[1], BUTTON_WIDTH, BUTTON_HEIGHT)
         button_load_game = pygame.Rect(BUTTON_2_CORDS[0], BUTTON_2_CORDS[1], BUTTON_WIDTH, BUTTON_HEIGHT)
@@ -108,6 +140,12 @@ class Window:
         return action
 
     def title_screen(self):
+        """
+        Generates title screen of game, its functions differ from
+        this of basic windows, for example, when save file is not present
+        Load Game button is unachivable for user to click, blocking him
+        from loading empty game
+        """
         run = True
         button_new_game = pygame.Rect(BUTTON_1_CORDS[0], BUTTON_1_CORDS[1], BUTTON_WIDTH, BUTTON_HEIGHT)
         button_load_game = pygame.Rect(BUTTON_2_CORDS[0], BUTTON_2_CORDS[1], BUTTON_WIDTH, BUTTON_HEIGHT)
@@ -123,7 +161,7 @@ class Window:
             self.draw_text_auto_centered("New game", font_button, BLACK, BUTTON_1_CORDS[1])
             self.draw_text_auto_centered("Load game", font_button, BLACK, BUTTON_2_CORDS[1])
             if button_load_game.collidepoint((x, y)):
-                if self._is_save:
+                if self._is_save:  # when save file is present
                     pygame.draw.rect(self._win, GREEN, button_load_game)
                     self.draw_text_auto_centered("Load game", font_button, BLACK, BUTTON_2_CORDS[1])
                     if click:
@@ -150,17 +188,24 @@ class Window:
                         click = True
 
     def side_choose_window(self):
+        """Generates side choose window, appends self._action attribute"""
         action = self._generate_basic_window_other_than_title("Choose side", "Order", "Chaos", "Order", "Chaos")
         self._side = action
 
     def difficulty_choose_window(self):
+        """Generates difficulty choose widnow,
+        appends self._gamemode attrubite"""
         action = self._generate_basic_window_other_than_title("Choose difficulty", "Easy", "Hard", "Easy", "Hard")
         self._gamemode = action
 
-    def game_window_loose(self):
+    def game_window_lose(self):
+        """Generates window displaying that player have lost,
+        appends self._end_action attribute (Exit or Retry)"""
         action = self._generate_basic_window_other_than_title("You Lose", "Retry", "Exit", "Retry", "Exit")
         self._end_action = action
 
     def game_window_win(self):
+        """Generates window displaying that player have won,
+        appends self._end_action attribute (Exit or Retry)"""
         action = self._generate_basic_window_other_than_title("You Won", "Retry", "Exit", "Retry", "Exit")
         self._end_action = action

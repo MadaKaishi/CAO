@@ -201,7 +201,7 @@ class EnemyAIOrder(Enemy):
                 return "O"
 
     def _get_middle_rectangle(self, board: "Board") -> list:
-        """Returns symbols from middle 4 x 4 rectangle in list form"""
+        """Returns symbols from middle 4 x 4 rectangle in nested list form"""
         list_board = board.board()
         middle_rect = []
         middle_rows = list_board[1:(size-1)]

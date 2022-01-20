@@ -1,6 +1,8 @@
 import pygame
 from classes.game import Game
 
+# Main file of the program
+
 
 def main():
     game = Game()
