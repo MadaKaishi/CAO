@@ -2,7 +2,9 @@ import pygame
 from typing import Union
 from pygame.constants import K_ESCAPE, MOUSEBUTTONDOWN
 from os.path import exists
-from .constants import BLACK, BUTTON_1_CORDS, BUTTON_2_CORDS, BUTTON_HEIGHT, BUTTON_WIDTH, FONT_TITLE_BUTONS, FONT_TITLE_HEADER, GREEN, GREY, HEADER_CORDS, PATH, SQUARE_SIZE, WHITE, WIDTH
+from .constants import BLACK, BUTTON_1_CORDS, BUTTON_2_CORDS, BUTTON_HEIGHT, \
+    BUTTON_WIDTH, FONT_TITLE_BUTONS, FONT_TITLE_HEADER, GREEN, GREY, \
+    HEADER_CORDS, PATH, SQUARE_SIZE, WHITE, WIDTH
 
 
 class Window:
@@ -79,13 +81,16 @@ class Window:
         textrect.topleft = (x, y)
         self._win.blit(textobj, textrect)
 
-    def draw_text_auto_centered(self, text: str, font: int, color: tuple, y: int):
+    def draw_text_auto_centered(self, text: str, font: int,
+                                color: tuple, y: int):
         """Draws rectangle with text that is auto centered"""
         textobj = font.render(text, 1, color)
         textrect = textobj.get_rect(center=(WIDTH//2, y + BUTTON_HEIGHT//2))
         self._win.blit(textobj, textrect)
 
-    def _generate_basic_window_other_than_title(self, text_title: str, text_button_1: str, text_button_2: str, action1: str, action2: str) -> str:
+    def _generate_basic_window(self, text_title: str, text_button_1: str,
+                               text_button_2: str, action1: str,
+                               action2: str) -> str:
         """
         Generates basic window with parameters equal to given as arguments
         Basic window consist of:\n
@@ -189,23 +194,27 @@ class Window:
 
     def side_choose_window(self):
         """Generates side choose window, appends self._action attribute"""
-        action = self._generate_basic_window_other_than_title("Choose side", "Order", "Chaos", "Order", "Chaos")
+        action = self._generate_basic_window("Choose side", "Order",
+                                             "Chaos", "Order", "Chaos")
         self._side = action
 
     def difficulty_choose_window(self):
         """Generates difficulty choose widnow,
         appends self._gamemode attrubite"""
-        action = self._generate_basic_window_other_than_title("Choose difficulty", "Easy", "Hard", "Easy", "Hard")
+        action = self._generate_basic_window("Choose difficulty", "Easy",
+                                             "Hard", "Easy", "Hard")
         self._gamemode = action
 
     def game_window_lose(self):
         """Generates window displaying that player have lost,
         appends self._end_action attribute (Exit or Retry)"""
-        action = self._generate_basic_window_other_than_title("You Lose", "Retry", "Exit", "Retry", "Exit")
+        action = self._generate_basic_window("You Lose", "Retry",
+                                             "Exit", "Retry", "Exit")
         self._end_action = action
 
     def game_window_win(self):
         """Generates window displaying that player have won,
         appends self._end_action attribute (Exit or Retry)"""
-        action = self._generate_basic_window_other_than_title("You Won", "Retry", "Exit", "Retry", "Exit")
+        action = self._generate_basic_window("You Won", "Retry",
+                                             "Exit", "Retry", "Exit")
         self._end_action = action

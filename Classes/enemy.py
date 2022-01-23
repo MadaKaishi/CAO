@@ -88,10 +88,9 @@ class EnemyAIOrder(Enemy):
 
     def _prepare_index_from_middle_rect(self, board: list, middle_rect: list):
         """
-        Prepares row and column based on tier list represented by board argument.
+        Prepares row and column based on tier list
+        represented by board argument.
         """
-        # To convert tiers of middle 4 x 4 square to tiers of 6 x 6 board, 1 is added
-        # to all indexes
         repeat = True
         while repeat:  # while repetition is needed
             repeat = False  # set repeat to False to avoid permanent loop
@@ -172,7 +171,7 @@ class EnemyAIOrder(Enemy):
         """
         Chooses symbol based on position determined by choose_index
         """
-        if self._middle_square_full:
+        if self._middle_square_full:  # if there are no possibilities in middle 4 x 4 square
             return choice(["X", "O"])
         collection, index = self._choose_symbol_atributes
         if collection == 0:  # if best action is to place piece in rows
@@ -180,7 +179,7 @@ class EnemyAIOrder(Enemy):
                 return "X"
             else:
                 return "O"
-        if collection == 1:  # if best action is to place piece in collumns
+        if collection == 1:  # if best action is to place piece in columns
             symbols_form_column = []
             for row in range(size-2):
                 symbols_form_column.append(self._middle_rect[row][index])

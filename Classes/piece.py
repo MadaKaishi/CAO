@@ -6,7 +6,7 @@ from classes.constants import BLACK, SQUARE_SIZE
 
 class Piece:
     """Class of Piece
-    This class represent single piece of game
+    This class represent single piece in game
     """
     PADDING = 10
     X_PADDING = 10
@@ -18,7 +18,7 @@ class Piece:
         row, col, symbol, x, y
         x and y are used to cooperate with GUI windows
         row and col are resposible for placement of piece on board,
-        symbol defines the symbol of piece either X or O
+        symbol defines the symbol of piece, either X or O
         """
         self._row = row
         self._column = column
@@ -49,10 +49,14 @@ class Piece:
         Draws X on board, that contains of two lines crossing at
         certain angle
         """
-        x_left = self._x - (SQUARE_SIZE//2) + self.X_PADDING  # coordinates of left x axis
-        x_right = self._x + (SQUARE_SIZE//2) - self.X_PADDING  # coordinates of right x axis
-        y_up = self._y - (SQUARE_SIZE//2) + self.X_PADDING  # coordinates of up y axis
-        y_down = self._y + (SQUARE_SIZE//2) - self.X_PADDING  # coordinates of down y axis
+        # coordinates of left x axis
+        x_left = self._x - (SQUARE_SIZE//2) + self.X_PADDING
+        # coordinates of right x axis
+        x_right = self._x + (SQUARE_SIZE//2) - self.X_PADDING
+        # coordinates of up y axis
+        y_up = self._y - (SQUARE_SIZE//2) + self.X_PADDING
+        # coordinates of down y axis
+        y_down = self._y + (SQUARE_SIZE//2) - self.X_PADDING
         pygame.draw.line(win, BLACK, (x_left, y_up), (x_right, y_down), self.LINE_THICKNESS)
         pygame.draw.line(win, BLACK, (x_left, y_down), (x_right, y_up), self.LINE_THICKNESS)
 

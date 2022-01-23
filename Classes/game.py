@@ -55,7 +55,7 @@ class Game():
         Restarts the game, makes an empty board, and
         set other variables as default
         """
-        self._board = Board()
+        self._board = Board()  # board is empty
         self._stop = False
         self._turn = "Order"
         self._winner = None
@@ -153,7 +153,7 @@ class Game():
     def _order_win_one_symbol(self, symbol: str) -> bool:
         """
         Checks if order order met winning conditons
-        with symbol given in function
+        with symbol given as argument
         """
         piece_board = self._board.board()
         board = []
@@ -188,7 +188,8 @@ class Game():
 
     def _check_diagonal(self, board: "Board", symbol: str) -> bool:
         """
-        Check if order wins along diagonal axis
+        Check if order wins along diagonal axis.
+        There are 6 diagonals, 2 long and 4 short
         Returns true if contitions are met
         """
         searched = [symbol, symbol, symbol, symbol, symbol]
@@ -208,7 +209,8 @@ class Game():
             diagonal_short_3.append(board[size-1-(index+1)][index])
             diagonal_short_4.append(board[size-1-index][index+1])
         dia_long = [diagonal_long_1, diagonal_long_2]
-        dia_short = [diagonal_short_1, diagonal_short_2, diagonal_short_3, diagonal_short_4]
+        dia_short = [diagonal_short_1, diagonal_short_2,
+                     diagonal_short_3, diagonal_short_4]
         if searched in dia_short:
             return True
         for diagonal in dia_long:

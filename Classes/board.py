@@ -23,7 +23,7 @@ class Board:
         Initializes the board object, if board in form of list is given,
         the board is loaded with values contained in it, if not then
         board is created with each tile filled with piece filled with
-        empty pieces
+        empty piece
         """
         self._board = board
         if self._board is None:  # if no board was given
@@ -91,6 +91,6 @@ class Board:
 
     def get_symbol_from_tile(self, row: int, col: int) -> str:
         """
-        Returns symbol from row and column given
+        Returns symbol of piece from row and column given
         """
         return self._board[row][col].symbol()
