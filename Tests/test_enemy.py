@@ -1,5 +1,6 @@
 from classes.board import Board
-from classes.enemy import Enemy, EnemyAIChaos, EnemyAIOrder, EnemyRandom, GameSupposedToBeFinished
+from classes.enemy import Enemy, EnemyAIChaos, EnemyAIOrder, EnemyRandom, \
+    GameSupposedToBeFinished
 from classes.piece import Piece
 from classes.constants import ROWS, COLS, BOARD_SIZE as size
 import pytest

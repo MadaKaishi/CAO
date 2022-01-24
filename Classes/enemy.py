@@ -8,7 +8,7 @@ class GameSupposedToBeFinished(Exception):
 
 
 class Enemy:
-    """Class Enemy:
+    """Class Enemy:\n
     Basic class that is further developed in more advanced enemy variants.
     Only argument is its name
     """
@@ -40,6 +40,8 @@ class EnemyRandom(Enemy):
         """
         Specifies which tiles are empty and the choosess one of them.
         Returns tuple of row and column of tile chosen
+        If bot have to choose form full board, GameSupposedToBeFinished error
+        is raised
         """
         empty_tiles = []
         iterable_board = board.board()
@@ -47,7 +49,7 @@ class EnemyRandom(Enemy):
             for piece in row:
                 if piece.symbol() == "":
                     empty_tiles.append((piece.row(), piece.col()))
-        if not empty_tiles:
+        if not empty_tiles:  # if bot will play if there are no empty tiles
             raise GameSupposedToBeFinished("Game should be over by now")
         return choice(empty_tiles)
 

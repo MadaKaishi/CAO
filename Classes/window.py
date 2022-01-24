@@ -21,14 +21,17 @@ class Window:
         Side, gamemode, action, game_end_action and save are set to None
         """
         pygame.init()
+        # set window size to (width, height)
         self._win = pygame.display.set_mode((width, height))
+        # set name of window
         pygame.display.set_caption(f"{caption}")
+        # set variables to none
         self._side = None
         self._gamemode = None
         self._action = None
         self._end_action = None
         self._is_save = None
-        self.check_save()
+        self.check_save()  # check if save file exist
 
     def end_action(self) -> Union[str, None]:
         """Returns self._end_action"""
@@ -130,16 +133,16 @@ class Window:
             self.update()
             click = False
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
+                if event.type == pygame.QUIT:  # if user leaves the game
                     action = None
                     run = False
                     pygame.quit()
-                if event.type == pygame.KEYDOWN:
+                if event.type == pygame.KEYDOWN:  # if escape key is pressed
                     if event.key == K_ESCAPE:
                         action = None
                         run = False
                         pygame.quit()
-                if event.type == MOUSEBUTTONDOWN:
+                if event.type == MOUSEBUTTONDOWN:  # if left clik is presses
                     if event.button == 1:
                         click = True
         return action
@@ -181,14 +184,14 @@ class Window:
             self.update()
             click = False
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
+                if event.type == pygame.QUIT:  # if game is closed
                     run = False
                     pygame.quit()
-                if event.type == pygame.KEYDOWN:
+                if event.type == pygame.KEYDOWN:  # if escape is pressed
                     if event.key == K_ESCAPE:
                         run = False
                         pygame.quit()
-                if event.type == MOUSEBUTTONDOWN:
+                if event.type == MOUSEBUTTONDOWN:  # if left button is clicked
                     if event.button == 1:
                         click = True
 
