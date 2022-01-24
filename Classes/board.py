@@ -10,7 +10,7 @@ class OverwriteError(Exception):
 
 class Board:
     """Class of Board
-    This class represents gaming board
+    This class represents game board
     It containts informations about all pieces in game,
     in form of nested lists:
     [[row],[row]...]

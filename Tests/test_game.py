@@ -1,7 +1,8 @@
 from classes.constants import COLS, ROWS
-from classes.enemy import EnemyRandom
 from classes.game import Game
 from classes.piece import Piece
+
+# Testing game creation and functionalities
 
 
 def test_game_create():
@@ -18,6 +19,8 @@ def test_restart():
     assert game.board().board()[0][0].symbol() == "X"
     game._restart()
     assert game.board().board()[0][0].symbol() == ""
+
+# Testing enemy choosing
 
 
 def test_game_opponent_choose_easy():

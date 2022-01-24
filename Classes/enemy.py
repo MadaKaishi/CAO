@@ -4,13 +4,16 @@ from .constants import BOARD_SIZE as size, COLS, ROWS
 
 
 class GameSupposedToBeFinished(Exception):
+    """Represents situation when bot is suposed to choose
+    out of board that is full
+    """
     pass
 
 
 class Enemy:
     """Class Enemy:\n
     Basic class that is further developed in more advanced enemy variants.
-    Only argument is its name
+    Its only argument is its name
     """
     def __init__(self, name=""):
         """
@@ -38,7 +41,7 @@ class EnemyRandom(Enemy):
 
     def choose_index(self, board: "Board") -> tuple:
         """
-        Specifies which tiles are empty and the choosess one of them.
+        Specifies which tiles are empty and then choosess one of them.
         Returns tuple of row and column of tile chosen
         If bot have to choose form full board, GameSupposedToBeFinished error
         is raised
@@ -70,6 +73,8 @@ class EnemyAIOrder(Enemy):
         """Initializes EnemyAIOrder object"""
         super().__init__(name)
         self._board = board
+        # tier list that represents how much worth is to play
+        # in certain row, column or diagonal
         self._tiers = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0]]
 
     def board(self) -> str:
@@ -92,6 +97,9 @@ class EnemyAIOrder(Enemy):
         """
         Prepares row and column based on tier list
         represented by board argument.
+        Worth noting is that indexes in the middle square are represented
+        from 0 to 3 while in real bord there are represented by number 1 to 4
+        so if we return index we need to add 1 to it
         """
         repeat = True
         while repeat:  # while repetition is needed
@@ -287,8 +295,8 @@ class EnemyAIOrder(Enemy):
         """
         When its given list of collections it analizes each collection,
         tier of each collection is based on not disturbed appearance of one
-        symbol, if second symbol appears in collecion its tier is placed
-        as -1 and its not taken in consideration when indexes are chosen
+        symbol type, if second symbol typeappears in collecion its tier is
+        set as -1 and its not taken in consideration when indexes are chosen
         """
         tier_list = []
         for collection in symbol_list:
@@ -358,6 +366,8 @@ class EnemyAIChaos(Enemy):
 
     def _par_movement(self) -> dict:
         """Creates dictionary of best chaos responses"""
+        # left numbers are row, col of piece placed
+        # right numbers are row, col of bots response
         moves_dictionary = {
             "00": "55",
             "01": "45",

@@ -28,7 +28,7 @@ class Game():
     """
     Class game represents game of Chaos and Order
     Its the main calss of this program
-    It is connected to other classes like:\n
+    It is uses objects of other classes like:\n
     -Border\n
     -Piece\n
     -Enemy\n
@@ -298,10 +298,10 @@ class Game():
 
     def player_move(self):
         """
-        Allows player to move that consist of:
-        -choosing a tile on board
-        -based on placement of mouse on the board player chooses tile
-        -based on click the symbol is chosen:
+        Allows player to move that consist of:\n
+        -choosing a tile on board\n
+        -based on placement of mouse on the board player chooses tile\n
+        -based on click the symbol is chosen:\n
             *  right click -> circle
             *  left click -> x
         """

@@ -1,6 +1,8 @@
-BOARD_SIZE = 6
+# path setting
 PATH = "save.txt"
 
+# window settings
+BOARD_SIZE = 6
 WIDTH = 600
 HEIGHT = 600
 ROWS = 6
@@ -12,6 +14,7 @@ BLACK = (0, 0, 0)
 GREY = (190, 190, 190)
 FPS = 60
 
+# button and headers settings
 FONT_TITLE_HEADER = 60
 FONT_TITLE_BUTONS = 45
 BUTTON_WIDTH = 300
